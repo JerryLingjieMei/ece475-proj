@@ -1,0 +1,14 @@
+// Data set for ubmark-vvadd
+
+int src0[] = {
+  16807,
+};
+
+int src1[] = {
+  282475249,
+};
+
+int ref[] = {
+  282492056,
+};
+
