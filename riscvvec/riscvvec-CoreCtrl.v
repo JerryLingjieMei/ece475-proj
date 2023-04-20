@@ -257,6 +257,7 @@ module riscv_CoreCtrl
   localparam alu_nor  = 4'd8;
   localparam alu_srl  = 4'd9;
   localparam alu_sra  = 4'd10;
+  localparam alu_redsum  = 4'd11;
 
   // Muldiv Function
 
@@ -438,7 +439,7 @@ module riscv_CoreCtrl
 //         `RISCV_INST_MSG_SV      :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_SLTVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_SEQVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_ZERO   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_LUIVI   :cs={y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_MVXS    :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_IDV     :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //

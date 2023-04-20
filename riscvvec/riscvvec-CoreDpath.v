@@ -243,6 +243,8 @@ module riscv_CoreDpath
   reg [31:0] branch_targ_Xhl;
   reg [31:0] op0_mux_out_Xhl;
   reg [31:0] op1_mux_out_Xhl;
+  reg [1024:0] op0_vec_Xhl;
+  reg [1024:0] op1_vec_Xhl;
   reg [31:0] wdata_Xhl;
 
   always @ (posedge clk) begin
@@ -251,6 +253,8 @@ module riscv_CoreDpath
       branch_targ_Xhl <= branch_targ_Dhl;
       op0_mux_out_Xhl <= op0_mux_out_Dhl;
       op1_mux_out_Xhl <= op1_mux_out_Dhl;
+      op0_vec_Xhl     <= vecrf_rdata0_Dhl;
+      op1_vec_Xhl     <= vecrf_rdata1_Dhl;
       wdata_Xhl       <= wdata_Dhl;
     end
   end
@@ -262,6 +266,7 @@ module riscv_CoreDpath
   // ALU
 
   wire [31:0] alu_out_Xhl;
+  wire [1024:0] alu_vec_out_Xhl;
 
   // Branch condition logic
 
@@ -473,12 +478,12 @@ module riscv_CoreDpath
   (
     .clk     (clk)
     .raddr0  (rf_raddr0_Dhl),
-    .rdata0  (rf_rdata0_Dhl),
+    .rdata0  (vecrf_rdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
-    .rdata1  (rf_rdata1_Dhl),
+    .rdata1  (vecrf_rdata1_Dhl),
     .wen_p   (rf_wen_Whl),
     .waddr_p (rf_waddr_Whl),
-    .wdata_p (wb_mux_out_Whl)
+    .wdata_p (vec_out_Whl)
   );
 
   // ALU
@@ -491,29 +496,15 @@ module riscv_CoreDpath
     .out  (alu_out_Xhl)
   );
 
-  // Multiplier/Divider
-	
-	riscv_CoreDpathPipeMulDiv pmuldiv
-	(
-	  .clk											(clk									),
-    .reset										(reset								),
-    
-		.muldivreq_msg_fn					(muldivreq_msg_fn_Dhl	),
-    .muldivreq_msg_a					(op0_mux_out_Dhl			),
-    .muldivreq_msg_b					(op1_mux_out_Dhl			),
-    .muldivreq_val						(muldivreq_val				),
-    .muldivreq_rdy						(muldivreq_rdy				),
-                                                   
-    .muldivresp_msg_result		(muldivresp_msg_result_X3hl),
-    .muldivresp_val						(muldivresp_val				),
-    .muldivresp_rdy						(muldivresp_rdy				),
-                                                
-		.stall_Xhl								(stall_Xhl						),
-    .stall_Mhl								(stall_Mhl						),
-    .stall_X2hl								(stall_X2hl						),
-    .stall_X3hl               (stall_X3hl           )
-	);
-
+  riscv_CoreDpathVecAlu vecalu
+  (
+    .vecin0  (op0_vec_sel_Dhl),
+    .vecin1  (op1_vec_sel_Dhl),
+    .in1     (op1_mux_out_Xhl),
+    .fn      (alu_fn_Xhl),
+    .vecout  (alu_vec_out_Xhl)
+    .out     (alu_out_Xhl)
+  )
 
 endmodule
 
