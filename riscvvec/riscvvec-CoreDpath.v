@@ -9,6 +9,7 @@
 `include "riscvvec-InstMsg.v"
 `include "riscvvec-CoreDpathAlu.v"
 `include "riscvvec-CoreDpathRegfile.v"
+`include "riscvvec-CoreDpathVecRegfile.v"
 
 module riscv_CoreDpath
 (
@@ -30,6 +31,8 @@ module riscv_CoreDpath
   input   [1:0] pc_mux_sel_Phl,
   input   [1:0] op0_mux_sel_Dhl,
   input   [2:0] op1_mux_sel_Dhl,
+  input         op0_vec_sel_Dhl,
+  input         op1_vec_sel_Dhl,
   input  [31:0] inst_Dhl,
   input   [3:0] alu_fn_Xhl,
   input   [2:0] muldivreq_msg_fn_Dhl,
@@ -457,6 +460,18 @@ module riscv_CoreDpath
   riscv_CoreDpathRegfile rfile
   (
     .clk     (clk),
+    .raddr0  (rf_raddr0_Dhl),
+    .rdata0  (rf_rdata0_Dhl),
+    .raddr1  (rf_raddr1_Dhl),
+    .rdata1  (rf_rdata1_Dhl),
+    .wen_p   (rf_wen_Whl),
+    .waddr_p (rf_waddr_Whl),
+    .wdata_p (wb_mux_out_Whl)
+  );
+
+  riscv_CoreDpathVectorRegfile vecrfile
+  (
+    .clk     (clk)
     .raddr0  (rf_raddr0_Dhl),
     .rdata0  (rf_rdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),

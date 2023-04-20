@@ -54,6 +54,8 @@ module riscv_Core
   wire  [1:0] pc_mux_sel_Phl;
   wire  [1:0] op0_mux_sel_Dhl;
   wire  [2:0] op1_mux_sel_Dhl;
+  wire        op0_vec_sel_Dhl;
+  wire        op1_vec_sel_Dhl;
   wire [31:0] inst_Dhl;
   wire  [3:0] alu_fn_Xhl;
   wire  [2:0] muldivreq_msg_fn_Dhl;
@@ -159,6 +161,8 @@ module riscv_Core
     .pc_mux_sel_Phl         (pc_mux_sel_Phl),
     .op0_mux_sel_Dhl        (op0_mux_sel_Dhl),
     .op1_mux_sel_Dhl        (op1_mux_sel_Dhl),
+    .op0_vec_sel_Dhl        (op0_vec_sel_Dhl),
+    .op1_vec_sel_Dhl        (op1_vec_sel_Dhl),
     .inst_Dhl               (inst_Dhl),
     .alu_fn_Xhl             (alu_fn_Xhl),
     .muldivreq_msg_fn_Dhl   (muldivreq_msg_fn_Dhl),
@@ -224,6 +228,8 @@ module riscv_Core
     .pc_mux_sel_Phl          (pc_mux_sel_Phl),
     .op0_mux_sel_Dhl         (op0_mux_sel_Dhl),
     .op1_mux_sel_Dhl         (op1_mux_sel_Dhl),
+    .op0_vec_sel_Dhl         (op0_vec_sel_Dhl),
+    .op1_vec_sel_Dhl         (op1_vec_sel_Dhl),
     .inst_Dhl                (inst_Dhl),
     .alu_fn_Xhl              (alu_fn_Xhl),
     .muldivreq_msg_fn_Dhl    (muldivreq_msg_fn_Dhl),

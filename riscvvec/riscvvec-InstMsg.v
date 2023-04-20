@@ -154,28 +154,36 @@
 
 
 `define RISCV_INST_MSG_LV       32'b???????_?????_?????_000_?????_0000011 // lb
-`define RISCV_INST_MSG_VSETVL   32'b???????_?????_?????_100_?????_0000011 // lbu
-`define RISCV_INST_MSG_VADDVI   32'b???????_?????_?????_001_?????_0000011 // lh
-`define RISCV_INST_MSG_VANDVI   32'b???????_?????_?????_101_?????_0000011 // lhu
+`define RISCV_INST_MSG_SETVL    32'b???????_?????_?????_100_?????_0000011 // lbu
+`define RISCV_INST_MSG_ADDVI    32'b???????_?????_?????_001_?????_0000011 // lh
+`define RISCV_INST_MSG_ANDVI    32'b???????_?????_?????_101_?????_0000011 // lhu
 
-`define RISCV_INST_MSG_LV       32'b???????_?????_?????_000_?????_0100011 // sb
-`define RISCV_INST_MSG_VMSLTVI  32'b???????_?????_?????_001_?????_0000011 // sh
-`define RISCV_INST_MSG_VMSEQVI  32'b???????_?????_?????_010_00000_1110011 // csrrs
-`define RISCV_INST_MSG_LUIVI    32'b???????_?????_?????_011_00000_1110011 // csrrc
+`define RISCV_INST_MSG_SV       32'b???????_?????_?????_000_?????_0100011 // sb
+`define RISCV_INST_MSG_SLTVI    32'b???????_?????_?????_001_?????_0000011 // sh
 
-`define RISCV_INST_MSG_VADDVX   32'b0000001_?????_?????_000_?????_0110011
-`define RISCV_INST_MSG_VADDVV   32'b0000001_?????_?????_001_?????_0110011  // not supported.
-`define RISCV_INST_MSG_VANDVX   32'b0000001_?????_?????_010_?????_0110011  // not supported.
-`define RISCV_INST_MSG_VWREDSUMVV    32'b0000001_?????_?????_011_?????_0110011  // not supported.
-`define RISCV_INST_MSG_VMSEQVX  32'b0000001_?????_?????_100_?????_0110011
-`define RISCV_INST_MSG_VMSEQVV  32'b0000001_?????_?????_101_?????_0110011
-`define RISCV_INST_MSG_VMSLTVX  32'b0000001_?????_?????_110_?????_0110011
-`define RISCV_INST_MSG_VMSLTVV  32'b0000001_?????_?????_111_?????_0110011
+`define RISCV_INST_MSG_SEQVI    32'b???????_?????_?????_010_?????_1110011 // csrrs
+`define RISCV_INST_MSG_ZERO    32'b???????_?????_?????_011_?????_1110011 // csrrc
+`define RISCV_INST_MSG_MVXS     32'b???????_?????_?????_110_?????_1110011 // csrrsi
+`define RISCV_INST_MSG_IDV      32'b???????_?????_?????_111_?????_1110011 // csrrci
+
+`define RISCV_INST_MSG_ADDVX    32'b0000001_?????_?????_000_?????_0110011
+`define RISCV_INST_MSG_ADDVV    32'b0000001_?????_?????_001_?????_0110011  // not supported.
+`define RISCV_INST_MSG_ANDVX    32'b0000001_?????_?????_010_?????_0110011  // not supported.
+`define RISCV_INST_MSG_REDSUM   32'b0000001_?????_?????_011_?????_0110011  // not supported.
+`define RISCV_INST_MSG_SEQVX    32'b0000001_?????_?????_100_?????_0110011
+`define RISCV_INST_MSG_SEQVV    32'b0000001_?????_?????_101_?????_0110011
+`define RISCV_INST_MSG_SLTVX    32'b0000001_?????_?????_110_?????_0110011
+`define RISCV_INST_MSG_SLTVV    32'b0000001_?????_?????_111_?????_0110011
 
 //------------------------------------------------------------------------
 // Control bundle
 //------------------------------------------------------------------------
-`define RISCV_INST_MSG_CS_SZ      39
+`define RISCV_INST_MSG_CS_SZ      42
+`define RISCV_INST_MSG_DEST_VEC   41:41
+`define RISCV_INST_MSG_OP0_VEC    40:40
+`define RISCV_INST_MSG_OP1_VEC    39:39
+`define RISCV_INST_MSG_INST_VAL   38:38
+`define RISCV_INST_MSG_INST_VAL   38:38
 `define RISCV_INST_MSG_INST_VAL   38:38
 `define RISCV_INST_MSG_J_EN       37:37
 `define RISCV_INST_MSG_BR_SEL     36:34
@@ -387,13 +395,13 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_BGE     : $sformat( dasm, "bge    r%02d, r%02d, %08x",       rs1, rs2, imm_sb );
         `RISCV_INST_MSG_BLTU    : $sformat( dasm, "bltu   r%02d, r%02d, %08x",       rs1, rs2, imm_sb );
         `RISCV_INST_MSG_BGEU    : $sformat( dasm, "bgeu   r%02d, r%02d, %08x",       rs1, rs2, imm_sb );
-        `RISCV_INST_MSG_LB      : $sformat( dasm, "lb     r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
-        `RISCV_INST_MSG_LH      : $sformat( dasm, "lh     r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
+//         `RISCV_INST_MSG_LB      : $sformat( dasm, "lb     r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
+//         `RISCV_INST_MSG_LH      : $sformat( dasm, "lh     r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
         `RISCV_INST_MSG_LW      : $sformat( dasm, "lw     r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
-        `RISCV_INST_MSG_LBU     : $sformat( dasm, "lbu    r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
-        `RISCV_INST_MSG_LHU     : $sformat( dasm, "lhu    r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
-        `RISCV_INST_MSG_SB      : $sformat( dasm, "sb     r%02d, r%02d, %08x",       rs2, rs1, imm_s  );
-        `RISCV_INST_MSG_SH      : $sformat( dasm, "sh     r%02d, r%02d, %08x",       rs2, rs1, imm_s  );
+//         `RISCV_INST_MSG_LBU     : $sformat( dasm, "lbu    r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
+//         `RISCV_INST_MSG_LHU     : $sformat( dasm, "lhu    r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
+//         `RISCV_INST_MSG_SB      : $sformat( dasm, "sb     r%02d, r%02d, %08x",       rs2, rs1, imm_s  );
+//         `RISCV_INST_MSG_SH      : $sformat( dasm, "sh     r%02d, r%02d, %08x",       rs2, rs1, imm_s  );
         `RISCV_INST_MSG_SW      : $sformat( dasm, "sw     r%02d, r%02d, %08x",       rs2, rs1, imm_s  );
         `RISCV_INST_MSG_ADDI    : $sformat( dasm, "addi   r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
         `RISCV_INST_MSG_SLTI    : $sformat( dasm, "slti   r%02d, r%02d, %08x",       rd,  rs1, imm_i  );
@@ -424,6 +432,26 @@ module riscv_InstMsgDisasm
 //         `RISCV_INST_MSG_DIVU    : $sformat( dasm, "divu   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
 //         `RISCV_INST_MSG_REM     : $sformat( dasm, "rem    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
 //         `RISCV_INST_MSG_REMU    : $sformat( dasm, "remu   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_LV      : $sformat( dasm, "lv     v%02d, r%02d, %08x     ", rd,  rs1, imm_i    );
+        `RISCV_INST_MSG_SETVL   : $sformat( dasm, "sltvi  r%02d, %08x     ",        rs1, imm_i    );
+        `RISCV_INST_MSG_ADDVI   : $sformat( dasm, "addvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_i    );
+        `RISCV_INST_MSG_ANDVI   : $sformat( dasm, "andvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_i    );
+
+        `RISCV_INST_MSG_SV      : $sformat( dasm, "sv     v%02d, r%02d, %08x     ", rd,  rs1, imm_s    );
+        `RISCV_INST_MSG_SLTVI   : $sformat( dasm, "sltvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_s    );
+        `RISCV_INST_MSG_SEQVI   : $sformat( dasm, "seqvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_i    );
+        `RISCV_INST_MSG_ZERO    : $sformat( dasm, "zero  v%02d     ", rd    );
+        `RISCV_INST_MSG_MVXV    : $sformat( dasm, "mvxv   r%02d, v%02d     ", rd,  rs1    );
+        `RISCV_INST_MSG_IDV     : $sformat( dasm, "idv    v%02d     ", rd    );
+
+        `RISCV_INST_MSG_ADDVX   : $sformat( dasm, "addvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_ADDVV   : $sformat( dasm, "addvv  v%02d, v%02d, v%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_ANDVX   : $sformat( dasm, "addvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_REDSUM  : $sformat( dasm, "redsum v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_SEQVX   : $sformat( dasm, "seqvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_SEQVV   : $sformat( dasm, "seqvv  v%02d, v%02d, v%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_SLTVX   : $sformat( dasm, "sltvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_SLTVV   : $sformat( dasm, "sltvv  v%02d, v%02d, v%02d     ", rd,  rs1, rs2    );
         default                : $sformat( dasm, "undefined inst       " );
       endcase
 
@@ -454,13 +482,13 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_BGE     : $sformat( minidasm, "bge   ");
         `RISCV_INST_MSG_BLTU    : $sformat( minidasm, "bltu  ");
         `RISCV_INST_MSG_BGEU    : $sformat( minidasm, "bgeu  ");
-        `RISCV_INST_MSG_LB      : $sformat( minidasm, "lb    ");
-        `RISCV_INST_MSG_LH      : $sformat( minidasm, "lh    ");
+//         `RISCV_INST_MSG_LB      : $sformat( minidasm, "lb    ");
+//         `RISCV_INST_MSG_LH      : $sformat( minidasm, "lh    ");
         `RISCV_INST_MSG_LW      : $sformat( minidasm, "lw    ");
-        `RISCV_INST_MSG_LBU     : $sformat( minidasm, "lbu   ");
-        `RISCV_INST_MSG_LHU     : $sformat( minidasm, "lhu   ");
-        `RISCV_INST_MSG_SB      : $sformat( minidasm, "sb    ");
-        `RISCV_INST_MSG_SH      : $sformat( minidasm, "sh    ");
+//         `RISCV_INST_MSG_LBU     : $sformat( minidasm, "lbu   ");
+//         `RISCV_INST_MSG_LHU     : $sformat( minidasm, "lhu   ");
+//         `RISCV_INST_MSG_SB      : $sformat( minidasm, "sb    ");
+//         `RISCV_INST_MSG_SH      : $sformat( minidasm, "sh    ");
         `RISCV_INST_MSG_SW      : $sformat( minidasm, "sw    ");
         `RISCV_INST_MSG_ADDI    : $sformat( minidasm, "addi  ");
         `RISCV_INST_MSG_SLTI    : $sformat( minidasm, "slti  ");
@@ -483,14 +511,36 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_AND     : $sformat( minidasm, "and   ");
         `RISCV_INST_MSG_CSRW    : $sformat( minidasm, "csrw  ");
         // RISCV32M
-        `RISCV_INST_MSG_MUL     : $sformat( minidasm, "mul   ");
-        `RISCV_INST_MSG_MULH    : $sformat( minidasm, "mulh  ");
-        `RISCV_INST_MSG_MULHSU  : $sformat( minidasm, "mulhsu");
-        `RISCV_INST_MSG_MULHU   : $sformat( minidasm, "mulhu ");
-        `RISCV_INST_MSG_DIV     : $sformat( minidasm, "div   ");
-        `RISCV_INST_MSG_DIVU    : $sformat( minidasm, "divu  ");
-        `RISCV_INST_MSG_REM     : $sformat( minidasm, "rem   ");
-        `RISCV_INST_MSG_REMU    : $sformat( minidasm, "remu  ");
+//         `RISCV_INST_MSG_MUL     : $sformat( minidasm, "mul   ");
+//         `RISCV_INST_MSG_MULH    : $sformat( minidasm, "mulh  ");
+//         `RISCV_INST_MSG_MULHSU  : $sformat( minidasm, "mulhsu");
+//         `RISCV_INST_MSG_MULHU   : $sformat( minidasm, "mulhu ");
+//         `RISCV_INST_MSG_DIV     : $sformat( minidasm, "div   ");
+//         `RISCV_INST_MSG_DIVU    : $sformat( minidasm, "divu  ");
+//         `RISCV_INST_MSG_REM     : $sformat( minidasm, "rem   ");
+//         `RISCV_INST_MSG_REMU    : $sformat( minidasm, "remu  ");
+
+        `RISCV_INST_MSG_LV      : $sformat( minidasm, "lv    "   );
+        `RISCV_INST_MSG_SETVL   : $sformat( minidasm, "sltvi "   );
+        `RISCV_INST_MSG_ADDVI   : $sformat( minidasm, "addvi " );
+        `RISCV_INST_MSG_ANDVI   : $sformat( minidasm, "andvi " );
+
+        `RISCV_INST_MSG_SV      : $sformat( minidasm, "sv    "   );
+        `RISCV_INST_MSG_SLTVI   : $sformat( minidasm, "sltvi "    );
+        `RISCV_INST_MSG_SEQVI   : $sformat( minidasm, "seqvi "    );
+        `RISCV_INST_MSG_ZERO    : $sformat( minidasm, "zero "  );
+
+        `RISCV_INST_MSG_MVXV    : $sformat( minidasm, "mvxv "  );
+        `RISCV_INST_MSG_IDV     : $sformat( minidasm, "idv "  );
+
+        `RISCV_INST_MSG_ADDVX   : $sformat( minidasm, "addvx "   );
+        `RISCV_INST_MSG_ADDVV   : $sformat( minidasm, "addvv "  );
+        `RISCV_INST_MSG_ANDVX   : $sformat( minidasm, "addvx "   );
+        `RISCV_INST_MSG_REDSUM  : $sformat( minidasm, "redsum"   );
+        `RISCV_INST_MSG_SEQVX   : $sformat( minidasm, "seqvx "   );
+        `RISCV_INST_MSG_SEQVV   : $sformat( minidasm, "seqvv "   );
+        `RISCV_INST_MSG_SLTVX   : $sformat( minidasm, "sltvx "   );
+        `RISCV_INST_MSG_SLTVV   : $sformat( minidasm, "sltvv "   );
         default                : $sformat( minidasm,  "undef ");
       endcase
 

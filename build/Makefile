@@ -68,14 +68,7 @@ tests = \
   riscv-divu.vmh \
   riscv-j.vmh \
   riscv-jalr.vmh \
-  riscv-lb.vmh \
-  riscv-lbu.vmh \
-  riscv-lh.vmh \
-  riscv-lhu.vmh \
-  riscv-mul.vmh \
   riscv-or.vmh \
-  riscv-rem.vmh \
-  riscv-remu.vmh \
   riscv-sb.vmh \
   riscv-sh.vmh \
   riscv-sll.vmh \
@@ -91,9 +84,42 @@ tests = \
   riscv-sub.vmh \
   riscv-xor.vmh \
   riscv-xori.vmh \
-  riscv-bug.vmh \
-  riscv-byp.vmh \
-  riscv-waw.vmh \
+
+vec_tests = \
+  riscv-add.vmh \
+  riscv-addi.vmh \
+  riscv-bne.vmh \
+  riscv-blt.vmh \
+  riscv-jal.vmh \
+  riscv-lui.vmh \
+  riscv-lw.vmh \
+  riscv-ori.vmh \
+  riscv-sw.vmh \
+  riscv-jr.vmh \
+  riscv-and.vmh \
+  riscv-andi.vmh \
+  riscv-beq.vmh \
+  riscv-bge.vmh \
+  riscv-bgeu.vmh \
+  riscv-bltu.vmh \
+  riscv-j.vmh \
+  riscv-jalr.vmh \
+  riscv-or.vmh \
+  riscv-sb.vmh \
+  riscv-sh.vmh \
+  riscv-sll.vmh \
+  riscv-slli.vmh \
+  riscv-slt.vmh \
+  riscv-slti.vmh \
+  riscv-sltiu.vmh \
+  riscv-sltu.vmh \
+  riscv-sra.vmh \
+  riscv-srai.vmh \
+  riscv-srl.vmh \
+  riscv-srli.vmh \
+  riscv-sub.vmh \
+  riscv-xor.vmh \
+  riscv-xori.vmh \
 
 riscvlong_rtl_sim = riscvlong-sim
 riscvlong_rtl_rand_sim = riscvlong-randdelay-sim
@@ -109,11 +135,11 @@ $(long_tests_rand_outs) : %-long-rand.out : %.vmh $(riscvlong_rtl_rand_sim)
 riscvvec_rtl_sim = riscvvec-sim
 riscvvec_rtl_rand_sim = riscvvec-randdelay-sim
 
-vec_tests_outs = $(patsubst %.vmh,%-vec.out,$(tests))
+vec_tests_outs = $(patsubst %.vmh,%-vec.out,$(vec_tests))
 $(vec_tests_outs) : %-vec.out : %.vmh $(riscvvec_rtl_sim)
 	./$(riscvvec_rtl_sim) +stats=1 +vcd=1 +exe=$< > $@
 
-vec_tests_rand_outs = $(patsubst %.vmh,%-vec-rand.out,$(tests))
+vec_tests_rand_outs = $(patsubst %.vmh,%-vec-rand.out,$(vec_tests))
 $(vec_tests_rand_outs) : %-vec-rand.out : %.vmh $(riscvvec_rtl_rand_sim)
 	./$(riscvvec_rtl_rand_sim) +stats=1 +vcd=1 +exe=$< > $@
 
