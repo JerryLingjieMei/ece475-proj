@@ -152,10 +152,29 @@
 `define RISCV_INST_MSG_REM      32'b0000001_?????_?????_110_?????_0110011
 `define RISCV_INST_MSG_REMU     32'b0000001_?????_?????_111_?????_0110011
 
+
+`define RISCV_INST_MSG_LV       32'b???????_?????_?????_000_?????_0000011 // lb
+`define RISCV_INST_MSG_VSETVL   32'b???????_?????_?????_100_?????_0000011 // lbu
+`define RISCV_INST_MSG_VADDVI   32'b???????_?????_?????_001_?????_0000011 // lh
+`define RISCV_INST_MSG_VANDVI   32'b???????_?????_?????_101_?????_0000011 // lhu
+
+`define RISCV_INST_MSG_LV       32'b???????_?????_?????_000_?????_0100011 // sb
+`define RISCV_INST_MSG_VMSLTVI  32'b???????_?????_?????_001_?????_0000011 // sh
+`define RISCV_INST_MSG_VMSEQVI  32'b???????_?????_?????_010_00000_1110011 // csrrs
+`define RISCV_INST_MSG_LUIVI    32'b???????_?????_?????_011_00000_1110011 // csrrc
+
+`define RISCV_INST_MSG_VADDVX   32'b0000001_?????_?????_000_?????_0110011
+`define RISCV_INST_MSG_VADDVV   32'b0000001_?????_?????_001_?????_0110011  // not supported.
+`define RISCV_INST_MSG_VANDVX   32'b0000001_?????_?????_010_?????_0110011  // not supported.
+`define RISCV_INST_MSG_VWREDSUMVV    32'b0000001_?????_?????_011_?????_0110011  // not supported.
+`define RISCV_INST_MSG_VMSEQVX  32'b0000001_?????_?????_100_?????_0110011
+`define RISCV_INST_MSG_VMSEQVV  32'b0000001_?????_?????_101_?????_0110011
+`define RISCV_INST_MSG_VMSLTVX  32'b0000001_?????_?????_110_?????_0110011
+`define RISCV_INST_MSG_VMSLTVV  32'b0000001_?????_?????_111_?????_0110011
+
 //------------------------------------------------------------------------
 // Control bundle
 //------------------------------------------------------------------------
-
 `define RISCV_INST_MSG_CS_SZ      39
 `define RISCV_INST_MSG_INST_VAL   38:38
 `define RISCV_INST_MSG_J_EN       37:37
@@ -168,6 +187,7 @@
 `define RISCV_INST_MSG_ALU_FN     24:21
 `define RISCV_INST_MSG_MULDIV_FN  20:18
 `define RISCV_INST_MSG_MULDIV_EN  17:17
+`define RISCV_INST_MSG_VEC_EN  17:17
 `define RISCV_INST_MSG_MULDIV_SEL 16:16
 `define RISCV_INST_MSG_EX_SEL     15:15
 `define RISCV_INST_MSG_MEM_REQ    14:13
@@ -396,14 +416,14 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_AND     : $sformat( dasm, "and    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
         `RISCV_INST_MSG_CSRW    : $sformat( dasm, "csrw   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
         // RISCV32M
-        `RISCV_INST_MSG_MUL     : $sformat( dasm, "mul    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        // `RISCV_INST_MSG_MULH    : $sformat( dasm, "mulh   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        // `RISCV_INST_MSG_MULHSU  : $sformat( dasm, "mulhsu r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        // `RISCV_INST_MSG_MULHU   : $sformat( dasm, "mulhu  r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        `RISCV_INST_MSG_DIV     : $sformat( dasm, "div    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        `RISCV_INST_MSG_DIVU    : $sformat( dasm, "divu   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        `RISCV_INST_MSG_REM     : $sformat( dasm, "rem    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
-        `RISCV_INST_MSG_REMU    : $sformat( dasm, "remu   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_MUL     : $sformat( dasm, "mul    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_MULH    : $sformat( dasm, "mulh   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_MULHSU  : $sformat( dasm, "mulhsu r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_MULHU   : $sformat( dasm, "mulhu  r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_DIV     : $sformat( dasm, "div    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_DIVU    : $sformat( dasm, "divu   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_REM     : $sformat( dasm, "rem    r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
+//         `RISCV_INST_MSG_REMU    : $sformat( dasm, "remu   r%02d, r%02d, r%02d     ", rd,  rs1, rs2    );
         default                : $sformat( dasm, "undefined inst       " );
       endcase
 
