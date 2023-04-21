@@ -10,6 +10,7 @@
 `include "riscvvec-CoreDpathAlu.v"
 `include "riscvvec-CoreDpathRegfile.v"
 `include "riscvvec-CoreDpathVecRegfile.v"
+`include "riscvvec-CoreDpathVecAlu.v"
 
 module riscv_CoreDpath
 (
@@ -167,6 +168,14 @@ module riscv_CoreDpath
   assign branch_targ_Dhl = pc_Dhl + imm_sb_Dhl;
   assign jump_targ_Dhl   = pc_Dhl + imm_uj_Dhl;
 
+  // Vector Register File
+  wire [4:0]    vrf_raddr0_Dhl = inst_rs1_Dhl;
+  wire [255:0]  vrf_rdata0_Dhl;
+  wire [4:0]    vrf_raddr1_Dhl = inst_rs2_Dhl;
+  wire [255:0]  vrf_rdata1_Dhl;
+  wire [31:0]   vm_Dhl;
+  wire [5:0]    vl_Dhl;
+
   // Register file
 
   wire [ 4:0] rf_raddr0_Dhl = inst_rs1_Dhl;
@@ -239,11 +248,15 @@ module riscv_CoreDpath
   // X <- D
   //----------------------------------------------------------------------
 
-  reg [31:0] pc_Xhl;
-  reg [31:0] branch_targ_Xhl;
-  reg [31:0] op0_mux_out_Xhl;
-  reg [31:0] op1_mux_out_Xhl;
-  reg [31:0] wdata_Xhl;
+  reg [31:0]  pc_Xhl;
+  reg [31:0]  branch_targ_Xhl;
+  reg [31:0]  op0_mux_out_Xhl;
+  reg [31:0]  op1_mux_out_Xhl;
+  reg [31:0]  wdata_Xhl;
+  reg [255:0] op0_Xhl;
+  reg [255:0] op1_Xhl;
+  reg [31:0]  vm_Xhl;
+  reg [5:0]   vl_Xhl;
 
   always @ (posedge clk) begin
     if( !stall_Xhl ) begin
@@ -252,6 +265,10 @@ module riscv_CoreDpath
       op0_mux_out_Xhl <= op0_mux_out_Dhl;
       op1_mux_out_Xhl <= op1_mux_out_Dhl;
       wdata_Xhl       <= wdata_Dhl;
+      op0_Xhl         <= vrf_rdata0_Dhl;
+      op1_Xhl         <= vrf_rdata1_Dhl;
+      vm_Xhl          <= vm_Dhl;
+      vl_Xhl          <= vl_Dhl;
     end
   end
 
@@ -472,13 +489,17 @@ module riscv_CoreDpath
   riscv_CoreDpathVectorRegfile vecrfile
   (
     .clk     (clk)
-    .raddr0  (rf_raddr0_Dhl),
-    .rdata0  (rf_rdata0_Dhl),
-    .raddr1  (rf_raddr1_Dhl),
-    .rdata1  (rf_rdata1_Dhl),
+    .raddr0  (vrf_raddr0_Dhl),
+    .rvec0   (vrf_rdata0_Dhl),
+    .raddr1  (vrf_raddr1_Dhl),
+    .rvec1   (vrf_rdata1_Dhl),
     .wen_p   (rf_wen_Whl),
     .waddr_p (rf_waddr_Whl),
-    .wdata_p (wb_mux_out_Whl)
+    .wvec_p  (wb_mux_out_Whl),
+    .wvlen_p (),
+    .wvl_p   (),
+    .mask    (vm_Dhl),
+    .vl      (vl_Dhl)
   );
 
   // ALU
@@ -488,6 +509,16 @@ module riscv_CoreDpath
     .in0  (op0_mux_out_Xhl),
     .in1  (op1_mux_out_Xhl),
     .fn   (alu_fn_Xhl),
+    .out  (alu_out_Xhl)
+  );
+
+  riscv_CoreDpathVecAlu vecalu
+  (
+    .in0  (op0_Xhl),
+    .in1  (op1_Xhl),
+    .fn   (alu_fn_Xhl),
+    .vm   (vm_Xhl),
+    .vl   (vl_Xhl),
     .out  (alu_out_Xhl)
   );
 

@@ -17,8 +17,8 @@ module riscv_CoreDpathVectorRegfile
   input  [255:0]wvec_p  // Write vec (sample on rising clk edge)
   input         wvlen_p,
   input  [4:0]  wvl_p,
-  output [5:0]  vl;
-  output        mask;
+  output [31:0] mask,
+  output [5:0]  vl
 );
 
   // We use an array of 32 bit register for the regfile itself
