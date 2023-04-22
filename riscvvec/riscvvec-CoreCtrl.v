@@ -246,6 +246,18 @@ module riscv_CoreCtrl
   // ALU Function
 
   localparam alu_x    = 4'bx;
+  localparam alu_addv = 4'd0;
+  localparam alu_subv = 4'd1;
+  localparam alu_sltv = 4'd2;
+  localparam alu_seqv = 4'd3;
+  localparam alu_andv = 4'd4;
+  localparam alu_addx = 4'd5;
+  localparam alu_subx = 4'd6;
+  localparam alu_sltx = 4'd7;
+  localparam alu_seqx = 4'd8;
+  localparam alu_andx = 4'd9;
+  localparam alu_redsum  = 4'd11;
+  /*
   localparam alu_add  = 4'd0;
   localparam alu_sub  = 4'd1;
   localparam alu_sll  = 4'd2;
@@ -257,7 +269,7 @@ module riscv_CoreCtrl
   localparam alu_nor  = 4'd8;
   localparam alu_srl  = 4'd9;
   localparam alu_sra  = 4'd10;
-  localparam alu_redsum  = 4'd11;
+  */
 
   // Muldiv Function
 
@@ -433,24 +445,24 @@ module riscv_CoreCtrl
 
 //         `RISCV_INST_MSG_LV      :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_SETVL   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_ADDVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_ANDVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_ADDVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_addx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_ANDVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_andx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //
 //         `RISCV_INST_MSG_SV      :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_SLTVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_SEQVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_LUIVI   :cs={y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_SLTVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sltx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_SEQVI   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_seqx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_LUIVI   :cs={y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_addx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_MVXS    :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_IDV     :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //
-//         `RISCV_INST_MSG_ADDVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_ADDVV   :cs={y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_ANDVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_ADDVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_addx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_ADDVV   :cs={y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_addv,    md_x, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_ANDVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_andx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //         `RISCV_INST_MSG_REDSUM  :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_SEQVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_SEQVV   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_SLTVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-//         `RISCV_INST_MSG_SLTVV   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_SEQVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_seqx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_SEQVV   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_seqv,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_SLTVX   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sltx,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+//         `RISCV_INST_MSG_SLTVV   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sltv,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
 
 		endcase

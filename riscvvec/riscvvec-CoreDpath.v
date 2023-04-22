@@ -511,20 +511,12 @@ module riscv_CoreDpath
 
   riscv_CoreDpathVecAlu vecalu
   (
-    .in0  (op0_Xhl),
-    .in1  (op1_Xhl),
-    .fn   (alu_fn_Xhl),
-    .vm   (vm_Xhl),
-    .vl   (vl_Xhl),
-    .out  (alu_out_Xhl)
-  );
-
-  riscv_CoreDpathVecAlu vecalu
-  (
     .vecin0  (op0_vec_sel_Dhl),
     .vecin1  (op1_vec_sel_Dhl),
     .in1     (op1_mux_out_Xhl),
     .fn      (alu_fn_Xhl),
+    .vm      (vm_Xhl),
+    .vl      (vl_Xhl),
     .vecout  (alu_vec_out_Xhl)
     .out     (alu_out_Xhl)
   )

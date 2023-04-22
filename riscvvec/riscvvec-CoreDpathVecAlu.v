@@ -12,8 +12,9 @@
 module riscv_CoreDpathAluAddSub
 (
   input      [2:0]   addsub_fn, // 000 = addv, 001 = subv, 010 = sltv, 011 = seqv, 100 = addx, 101 = subx, 110 = sltx, 111 = seqx 
-  input      [255:0] alu_a,     // A operand
-  input      [255:0] alu_b,     // B operand (if scalar, assumed to be 0 padded to 256 bits)
+  input      [255:0] vec_a,     // A operand
+  input      [255:0] vec_b,     // B operand
+  input      [31:0]  scalar,    // Scalar input
   input              vm,        // vector mask
   input              vl,        // vector length
   output reg [255:0] result     // result
@@ -30,8 +31,8 @@ genvar i;
       localparam msb = lsb + 31;
 
       // Element currently being worked on
-      wire elem_a = alu_a[msb,lsb];
-      wire elem_b = (addsub_fn[2]) ? alu_b[31:0] : alu_b[msb,lsb];
+      wire elem_a = vec_a[msb,lsb];
+      wire elem_b = (addsub_fn[2]) ? scalar : vec_b[msb,lsb];
       
       // We use one adder to perform both additions and subtractions
       wire [31:0] xB  = ( addsub_fn[1:0] != 2'b00 ) ? ( ~elem_b + 1 ) : elem_b;
@@ -99,8 +100,8 @@ endmodule
 module riscv_CoreDpathAluShifter
 (
   input  [ 1:0] shift_fn,  // 00 = lsl, 01 = lsr, 11 = asr
-  input  [31:0] alu_a,     // Shift ammount
-  input  [31:0] alu_b,     // Operand to shift
+  input  [31:0] vec_a,     // Shift ammount
+  input  [31:0] vec_b,     // Operand to shift
   output [31:0] result     // result
 );
 
@@ -124,8 +125,9 @@ endmodule
 module riscv_CoreDpathAluLogical
 (
   input  [2:0]  logical_fn, // 000 = andv, 001 = orv, 010 = xorv, 011 = norv, 100 = andx, 101 = orx, 110 = xorx, 111 = norx
-  input  [255:0] alu_a,
-  input  [255:0] alu_b,
+  input  [255:0] vec_a,
+  input  [255:0] vec_b,
+  input  [31:0]  scalar,
   output [255:0] result
 );
 
@@ -139,8 +141,8 @@ genvar i;
       localparam msb = lsb + 31;
 
       // Element currently being worked on
-      wire elem_a = alu_a[msb,lsb];
-      wire elem_b = (addsub_fn[2]) ? alu_b[31:0] : alu_b[msb,lsb];
+      wire elem_a = vec_a[msb,lsb];
+      wire elem_b = (addsub_fn[2]) ? scalar : vec_b[msb,lsb];
 
     end
   end
@@ -162,12 +164,13 @@ endmodule
 
 module riscv_CoreDpathVecAlu
 (
-  input  [255:0] in0,
-  input  [255:0] in1,
+  input  [255:0] vecin0,
+  input  [255:0] vecin1,
+  input  [31:0]  in1,
   input  [3:0]   fn,
   input          vm,
   input          vl,
-  output [255:0] out
+  output [255:0] vecout
 );
 
   // -- Decoder ----------------------------------------------------------
@@ -220,8 +223,9 @@ module riscv_CoreDpathVecAlu
   riscv_CoreDpathAluAddSub addsub
   (
     .addsub_fn  (fn_addsub),
-    .alu_a      (in0),
-    .alu_b      (in1),
+    .vec_a      (vecin0),
+    .vec_b      (vecin1),
+    .scalar     (in1),
     .vm         (vm),
     .vl         (vl),
     .result     (addsub_out)
@@ -233,20 +237,22 @@ module riscv_CoreDpathVecAlu
   riscv_CoreDpathAluShifter shifter
   (
     .shift_fn   (fn_shifter),
-    .alu_a      (in1),
-    .alu_b      (in0),
+    .vec_a      (vecin1),
+    .vec_b      (vecin0),
     .vm         (vm),
     .vl         (vl),
     .result     (shifter_out)
   );
   */
+  
   wire [255:0] logical_out;
 
   riscv_CoreDpathAluLogical logical
   (
     .logical_fn (fn_logical),
-    .alu_a      (in0),
-    .alu_b      (in1),
+    .vec_a      (vecin0),
+    .vec_b      (vecin1),
+    .scalar     (in1),
     .vm         (vm),
     .vl         (vl),
     .result     (logical_out)
@@ -257,10 +263,10 @@ module riscv_CoreDpathVecAlu
 
   // -- Final output mux -------------------------------------------------
 
-  assign out = ( out_mux_sel == 2'd0 ) ? addsub_out
-  //           : ( out_mux_sel == 2'd1 ) ? shifter_out
-             : ( out_mux_sel == 2'd2 ) ? logical_out
-             :                           256'bx;
+  assign vecout = ( out_mux_sel == 2'd0 ) ? addsub_out
+  //            : ( out_mux_sel == 2'd1 ) ? shifter_out
+                : ( out_mux_sel == 2'd2 ) ? logical_out
+                :                           256'bx;
 
 endmodule
 
