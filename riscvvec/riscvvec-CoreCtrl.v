@@ -256,7 +256,7 @@ module riscv_CoreCtrl
   localparam alu_sltx = 4'd7;
   localparam alu_seqx = 4'd8;
   localparam alu_andx = 4'd9;
-  localparam alu_redsum  = 4'd11;
+  localparam alu_redsum  = 4'd10;
   /*
   localparam alu_add  = 4'd0;
   localparam alu_sub  = 4'd1;

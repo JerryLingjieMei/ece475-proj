@@ -31,8 +31,8 @@ genvar i;
       localparam msb = lsb + 31;
 
       // Element currently being worked on
-      wire elem_a = vec_a[msb,lsb];
-      wire elem_b = (addsub_fn[2]) ? scalar : vec_b[msb,lsb];
+      wire [31:0] elem_a = ( addsub_fn !== 4'b1000 ) ? vec_a[msb,lsb]  : vec_a[31:0];
+      wire [31:0] elem_b = ( addsub_fn[2] )          ? scalar          : vec_b[msb,lsb];
       
       // We use one adder to perform both additions and subtractions
       wire [31:0] xB  = ( addsub_fn[1:0] != 2'b00 ) ? ( ~elem_b + 1 ) : elem_b;
@@ -82,7 +82,19 @@ genvar i;
             result[msb,lsb] = {31'b0, 31'b1};
           else
             result[msb,lsb] = {31'b0, 31'b0};
-    
+        
+        else if ( addsub_fn == 4'b1000 )
+        begin
+          localparam first = 1;
+          if ( first )
+          begin
+            result[31:0] = sum;
+            first = first - 1;
+          end
+          else
+            result[31:0] = result [31:0] + sum;
+        end
+
         else
           result[msb,lsb] = 32'bx;
 
@@ -176,10 +188,9 @@ module riscv_CoreDpathVecAlu
   // -- Decoder ----------------------------------------------------------
 
   reg [1:0] out_mux_sel;
-  reg [2:0] fn_addsub;
+  reg [3:0] fn_addsub;
   reg [1:0] fn_shifter;
   reg [2:0] fn_logical;
-  reg       fn_muldiv;
 
   reg [10:0] cs;
 
@@ -189,17 +200,18 @@ module riscv_CoreDpathVecAlu
     cs = 11'bx;
     case ( fn )
       // Vector
-      4'd0  : cs = { 2'd0, 3'b000, 2'bxx, 3'bxxx, 1'bx  }; // ADDV
-      4'd1  : cs = { 2'd0, 3'b001, 2'bxx, 3'bxxx, 1'bx  }; // SUBV
-      4'd2  : cs = { 2'd0, 3'b010, 2'bxx, 3'bxxx, 1'bx  }; // SLTV
-      4'd3  : cs = { 2'd0, 3'b011, 2'bxx, 3'bxxx, 1'bx  }; // SEQV
-      4'd4  : cs = { 2'd2, 3'bxxx, 2'bxx, 3'b000, 1'bx  }; // ANDV
+      4'd0  : cs = { 2'd0, 4'b0000, 2'bxx, 3'bxxx}; // ADDV
+      4'd1  : cs = { 2'd0, 4'b0001, 2'bxx, 3'bxxx}; // SUBV
+      4'd2  : cs = { 2'd0, 4'b0010, 2'bxx, 3'bxxx}; // SLTV
+      4'd3  : cs = { 2'd0, 4'b0011, 2'bxx, 3'bxxx}; // SEQV
+      4'd4  : cs = { 2'd2, 4'bxxxx, 2'bxx, 3'b000}; // ANDV
+      4'd10 : cs = { 2'd0, 4'b1000, 2'bxx, 3'b000}; // REDSUM
       // Scalar
-      4'd5  : cs = { 2'd0, 3'b100, 2'bxx, 3'bxxx, 1'bx  }; // ADDX
-      4'd6  : cs = { 2'd0, 3'b101, 2'bxx, 3'bxxx, 1'bx  }; // SUBX
-      4'd7  : cs = { 2'd0, 3'b110, 2'bxx, 3'bxxx, 1'bx  }; // SLTX
-      4'd8  : cs = { 2'd0, 3'b111, 2'bxx, 3'bxxx, 1'bx  }; // SEQX
-      4'd9  : cs = { 2'd2, 3'bxxx, 2'bxx, 3'b100, 1'bx  }; // ANDX
+      4'd5  : cs = { 2'd0, 4'b0100, 2'bxx, 3'bxxx}; // ADDX
+      4'd6  : cs = { 2'd0, 4'b0101, 2'bxx, 3'bxxx}; // SUBX
+      4'd7  : cs = { 2'd0, 4'b0110, 2'bxx, 3'bxxx}; // SLTX
+      4'd8  : cs = { 2'd0, 4'b0111, 2'bxx, 3'bxxx}; // SEQX
+      4'd9  : cs = { 2'd2, 4'bxxxx, 2'bxx, 3'b100}; // ANDX
 
       //4'd2  : cs = { 2'd1, 3'bxx, 2'b00, 2'bxx, 2'bxx  }; // SLL
       //4'd3  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b01, 2'bxx  }; // OR
@@ -257,9 +269,6 @@ module riscv_CoreDpathVecAlu
     .vl         (vl),
     .result     (logical_out)
   );
-
-  wire [255:0] muldiv_out;
-
 
   // -- Final output mux -------------------------------------------------
 
