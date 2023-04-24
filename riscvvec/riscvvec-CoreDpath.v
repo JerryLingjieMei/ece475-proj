@@ -261,8 +261,8 @@ module riscv_CoreDpath
     : ( op1_mux_sel_Dhl == 3'd6 ) ? const0
     :                               32'bx;
 
-  wire [1023:0] op0_mux_vout_Dhl = vdata0_byp_mux_out_Dhl;
-  wire [1023:0] op1_mux_vout_Dhl = vdata1_byp_mux_out_Dhl;
+  wire [255:0] op0_mux_vout_Dhl = vdata0_byp_mux_out_Dhl;
+  wire [255:0] op1_mux_vout_Dhl = vdata1_byp_mux_out_Dhl;
 
   // wdata with bypassing
 
@@ -276,8 +276,8 @@ module riscv_CoreDpath
   reg [31:0] branch_targ_Xhl;
   reg [31:0] op0_mux_out_Xhl;
   reg [31:0] op1_mux_out_Xhl;
-  reg [1023:0] op0_mux_vout_Xhl;
-  reg [1023:0] op1_mux_vout_Xhl;
+  reg [255:0] op0_mux_vout_Xhl;
+  reg [255:0] op1_mux_vout_Xhl;
   reg [31:0] wdata_Xhl;
 
   always @ (posedge clk) begin
@@ -303,7 +303,7 @@ module riscv_CoreDpath
   // ALU
 
   wire [31:0] alu_out_Xhl;
-  wire [1023:0] alu_vout_Xhl;
+  wire [255:0] alu_vout_Xhl;
 
   // Branch condition logic
 
@@ -321,7 +321,7 @@ module riscv_CoreDpath
   assign dmemreq_msg_data = wdata_Xhl;
 
   wire [31:0] execute_mux_out_Xhl = alu_out_Xhl;
-  wire [1023:0] execute_mux_vout_Xhl = alu_vout_Xhl;
+  wire [255:0] execute_mux_vout_Xhl = alu_vout_Xhl;
 
  
   //----------------------------------------------------------------------
@@ -368,7 +368,7 @@ module riscv_CoreDpath
     : ( dmemresp_mux_sel_Mhl == 3'd4 ) ? dmemresp_lhu_Mhl
     :                                    32'bx;
 
-   wire [1023:0] dmemresp_mux_vout_Mhl = 1024'bx;
+   wire [255:0] dmemresp_mux_vout_Mhl = 1024'bx;
 
   //----------------------------------------------------------------------
   // Queue for data memory response
@@ -391,7 +391,7 @@ module riscv_CoreDpath
     : ( dmemresp_queue_val_Mhl )  ? dmemresp_queue_reg_Mhl
     :                               32'bx;
     
-  wire [1023:0] dmemresp_queue_mux_vout_Mhl = dmemresp_queue_mux_out_Mhl;
+  wire [255:0] dmemresp_queue_mux_vout_Mhl = dmemresp_queue_mux_out_Mhl;
 
   //----------------------------------------------------------------------
   // Writeback mux
@@ -402,7 +402,7 @@ module riscv_CoreDpath
     : ( wb_mux_sel_Mhl == 1'd1 ) ? dmemresp_queue_mux_out_Mhl
     :                              32'bx;
     
-   wire [1023:0] wb_mux_vout_Mhl
+   wire [255:0] wb_mux_vout_Mhl
     = ( wb_mux_sel_Mhl == 1'd0 ) ? execute_mux_vout_Mhl
     : ( wb_mux_sel_Mhl == 1'd1 ) ? dmemresp_queue_mux_vout_Mhl
     :                              1024'bx;
@@ -413,7 +413,7 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_X2hl;
   reg  [31:0] wb_mux_out_X2hl;
-  reg  [1023:0] wb_mux_vout_X2hl;
+  reg  [255:0] wb_mux_vout_X2hl;
 
   always @ (posedge clk) begin
     if( !stall_X2hl ) begin
@@ -430,7 +430,7 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_X3hl;
   reg  [31:0] wb_mux_out_X3hl;
-  reg  [1023:0] wb_mux_vout_X3hl;
+  reg  [255:0] wb_mux_vout_X3hl;
 
   always @ (posedge clk) begin
     if( !stall_X3hl ) begin
@@ -464,7 +464,7 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_Whl;
   reg  [31:0] wb_mux_out_Whl;
-  reg  [1023:0] wb_mux_vout_Whl;
+  reg  [255:0] wb_mux_vout_Whl;
 
   always @ (posedge clk) begin
     if( !stall_Whl ) begin
