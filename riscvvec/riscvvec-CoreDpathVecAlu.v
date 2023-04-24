@@ -11,107 +11,124 @@
 
 module riscv_CoreDpathAluAddSub
 (
-  input      [ 1:0] addsub_fn, // 00 = add, 01 = sub, 10 = slt, 11 = sltu
-  input      [31:0] alu_a,     // A operand
-  input      [31:0] alu_b,     // B operand
-  output reg [31:0] result     // result
+  input      [2:0]   addsub_fn, // 000 = addv, 001 = subv, 010 = sltv, 011 = seqv, 100 = addx, 101 = subx, 110 = sltx, 111 = seqx 
+  input      [255:0] vec_a,     // A operand
+  input      [255:0] vec_b,     // B operand
+  input      [31:0]  scalar,    // Scalar input
+  input              vm,        // vector mask
+  input              vl,        // vector length
+  output reg [255:0] result     // result
 );
 
-  // We use one adder to perform both additions and subtractions
-  wire [31:0] xB  = ( addsub_fn != 2'b00 ) ? ( ~alu_b + 1 ) : alu_b;
-  wire [31:0] sum = alu_a + xB;
+// Iterate through vector length
+genvar i;
+  generate
+  for( i = 0; i < vl; i = i + 1) begin
+    if(vm[i]) begin
 
-  wire diffSigns = alu_a[31] ^ alu_b[31];
+      // MSB and LSB of current element being worked on
+      localparam lsb = i * 32;
+      localparam msb = lsb + 31;
 
-  always @(*)
-  begin
+      // Element currently being worked on
+      wire [31:0] elem_a = ( addsub_fn !== 4'b1000 ) ? vec_a[msb,lsb]  : vec_a[31:0];
+      wire [31:0] elem_b = ( addsub_fn[2] )          ? scalar          : vec_b[msb,lsb];
+      
+      // We use one adder to perform both additions and subtractions
+      wire [31:0] xB  = ( addsub_fn[1:0] != 2'b00 ) ? ( ~elem_b + 1 ) : elem_b;
+      wire [31:0] sum = elem_a + xB;
 
-    if (( addsub_fn == 2'b00 ) || ( addsub_fn == 2'b01 ))
-      result = sum;
+      wire diffSigns = elem_a[31] ^ elem_b[31];
 
-    // Logic for signed set less than
-    else if ( addsub_fn == 2'b10 )
-    begin
+      always @(*)
+      begin
 
-      // If the signs of alu_a and alu_b are different then one is
-      // negative and one is positive. If alu_a is the positive one then
-      // it is not less than alu_b, and if alu_a is the negative one then
-      // it is less than alu_b.
+        if (( addsub_fn[1:0] == 2'b00 ) || ( addsub_fn[1:0] == 2'b01 ))
+          result[msb,lsb] = sum;
 
-      if ( diffSigns )
-        if ( alu_a[31] == 1'b0 )    // alu_a is positive
-          result = { 31'b0, 1'b0 };
-        else                        // alu_a is negative
-          result = { 31'b0, 1'b1 };
+        // Logic for signed set less than
+        else if ( addsub_fn[1:0] == 2'b10 )
+        begin
 
-      // If the signs of alu_a and alu_b are the same then we look at the
-      // result from (alu_a - alu_b). If this is positive then alu_a is
-      // not less than alu_b, and if this is negative then alu_a is
-      // indeed less than alu_b.
+          // If the signs of elem_a and elem_b are different then one is
+          // negative and one is positive. If elem_a is the positive one then
+          // it is not less than elem_b, and if elem_a is the negative one then
+          // it is less than elem_b.
 
-      else
-        if ( sum[31] == 1'b0 )      // (alu_a - alu_b) is positive
-          result = { 31'b0, 1'b0 };
-        else                        // (alu_a - alu_b) is negative
-          result = { 31'b0, 1'b1 };
+          if ( diffSigns )
+            if ( elem_a[31] == 1'b0 )    // elem_a is positive
+              result[msb,lsb] = { 31'b0, 1'b0 };
+            else                        // elem_a is negative
+              result[msb,lsb] = { 31'b0, 1'b1 };
 
+          // If the signs of elem_a and elem_b are the same then we look at the
+          // result from (elem_a - elem_b). If this is positive then elem_a is
+          // not less than elem_b, and if this is negative then elem_a is
+          // indeed less than elem_b.
+
+          else
+            if ( sum[31] == 1'b0 )      // (elem_a - elem_b) is positive
+              result[msb,lsb] = { 31'b0, 1'b0 };
+            else                        // (elem_a - elem_b) is negative
+              result[msb,lsb] = { 31'b0, 1'b1 };
+
+        end
+
+        // Logic for set equal to
+        else if ( addsub_fn[1:0] == 2'b11 )
+          
+          //If two elements are the same, set result to 1 else set to 0
+          if(elem_a == elem_b)
+            result[msb,lsb] = {31'b0, 31'b1};
+          else
+            result[msb,lsb] = {31'b0, 31'b0};
+        
+        else if ( addsub_fn == 4'b1000 )
+        begin
+          localparam first = 1;
+          if ( first )
+          begin
+            result[31:0] = sum;
+            first = first - 1;
+          end
+          else
+            result[31:0] = result [31:0] + sum;
+        end
+
+        else
+          result[msb,lsb] = 32'bx;
+
+      end
     end
-
-    // Logic for unsigned set less than
-    else if ( addsub_fn == 2'b11 )
-
-      // If the MSB of alu_a and alu_b are different then the one with a
-      // one in the MSB is greater than the other. If alu_a has a one in
-      // the MSB then it is not less than alu_b, and if alu_a has a zero
-      // in the MSB then it is less than alu_b.
-
-      if ( diffSigns )
-        if ( alu_a[31] == 1'b1 )    // alu_a is the greater one
-          result = { 31'b0, 1'b0 };
-        else                        // alu_a is the smaller one
-          result = { 31'b0, 1'b1 };
-
-      // If the MSB of alu_a and alu_b are the same then we look at the
-      // result from (alu_a - alu_b). If this is positive then alu_a is
-      // not less than alu_b, and if this is negative then alu_a is
-      // indeed less than alu_b.
-
-      else
-        if ( sum[31] == 1'b0 )      // (alu_a - alu_b) is positive
-          result = { 31'b0, 1'b0 };
-        else                        // (alu_a - alu_b) is negative
-          result = { 31'b0, 1'b1 };
-
-    else
-      result = 32'bx;
-
   end
-
+  endgenerate
 endmodule
 
 //-------------------------------------------------------------------------
 // shifter unit
 //-------------------------------------------------------------------------
 
+/*
 module riscv_CoreDpathAluShifter
 (
   input  [ 1:0] shift_fn,  // 00 = lsl, 01 = lsr, 11 = asr
-  input  [31:0] alu_a,     // Shift ammount
-  input  [31:0] alu_b,     // Operand to shift
+  input  [31:0] vec_a,     // Shift ammount
+  input  [31:0] vec_b,     // Operand to shift
   output [31:0] result     // result
 );
 
   // We need this to make sure that we get a signed right shift
-  wire signed [31:0] signed_alu_b = alu_b;
-  wire signed [31:0] signed_result = signed_alu_b >>> alu_a[4:0];
+  wire signed [31:0] signed_elem_b = elem_b;
+  wire signed [31:0] signed_result = signed_elem_b >>> elem_a[4:0];
 
   assign result
-    = ( shift_fn == 2'b00 ) ? ( alu_b << alu_a[4:0] ) :
-      ( shift_fn == 2'b01 ) ? ( alu_b >> alu_a[4:0] ) :
+    = ( shift_fn == 2'b00 ) ? ( elem_b << elem_a[4:0] ) :
+      ( shift_fn == 2'b01 ) ? ( elem_b >> elem_a[4:0] ) :
       ( shift_fn == 2'b11 ) ? signed_result :
                               ( 32'bx );
 
 endmodule
+*/
 
 //-------------------------------------------------------------------------
 // logical unit
@@ -119,17 +136,36 @@ endmodule
 
 module riscv_CoreDpathAluLogical
 (
-  input  [1:0]  logical_fn, // 00 = and, 01 = or, 10 = xor, 11 = nor
-  input  [31:0] alu_a,
-  input  [31:0] alu_b,
-  output [31:0] result
+  input  [2:0]  logical_fn, // 000 = andv, 001 = orv, 010 = xorv, 011 = norv, 100 = andx, 101 = orx, 110 = xorx, 111 = norx
+  input  [255:0] vec_a,
+  input  [255:0] vec_b,
+  input  [31:0]  scalar,
+  output [255:0] result
 );
 
-  assign result
-    = ( logical_fn == 2'b00 ) ?  ( alu_a & alu_b ) :
-      ( logical_fn == 2'b01 ) ?  ( alu_a | alu_b ) :
-      ( logical_fn == 2'b10 ) ?  ( alu_a ^ alu_b ) :
-      ( logical_fn == 2'b11 ) ? ~( alu_a | alu_b ) :
+genvar i;
+  generate
+  for( i = 0; i < vl; i = i + 1) begin
+    if(vm[i]) begin
+
+      // MSB and LSB of current element being worked on
+      localparam lsb = i * 32;
+      localparam msb = lsb + 31;
+
+      // Element currently being worked on
+      wire elem_a = vec_a[msb,lsb];
+      wire elem_b = (addsub_fn[2]) ? scalar : vec_b[msb,lsb];
+
+    end
+  end
+
+  endgenerate
+
+  assign result[msb,lsb]
+    = ( logical_fn[1:0] == 2'b00 ) ?  ( elem_a & elem_b ) :
+      ( logical_fn[1:0] == 2'b01 ) ?  ( elem_a | elem_b ) :
+      ( logical_fn[1:0] == 2'b10 ) ?  ( elem_a ^ elem_b ) :
+      ( logical_fn[1:0] == 2'b11 ) ? ~( elem_a | elem_b ) :
                                  ( 32'bx );
 
 endmodule
@@ -138,21 +174,23 @@ endmodule
 // Main alu
 //-------------------------------------------------------------------------
 
-module riscv_CoreDpathAlu
+module riscv_CoreDpathVecAlu
 (
-  input  [31:0] in0,
-  input  [31:0] in1,
-  input  [ 3:0] fn,
-  output [31:0] out
+  input  [255:0] vecin0,
+  input  [255:0] vecin1,
+  input  [31:0]  in1,
+  input  [3:0]   fn,
+  input          vm,
+  input          vl,
+  output [255:0] vecout
 );
 
   // -- Decoder ----------------------------------------------------------
 
   reg [1:0] out_mux_sel;
-  reg [1:0] fn_addsub;
+  reg [3:0] fn_addsub;
   reg [1:0] fn_shifter;
-  reg [1:0] fn_logical;
-  reg [2:0] fn_muldiv;
+  reg [2:0] fn_logical;
 
   reg [10:0] cs;
 
@@ -161,17 +199,29 @@ module riscv_CoreDpathAlu
 
     cs = 11'bx;
     case ( fn )
-      4'd0  : cs = { 2'd0, 2'b00, 2'bxx, 2'bxx, 3'bxx  }; // ADD
-      4'd1  : cs = { 2'd0, 2'b01, 2'bxx, 2'bxx, 3'bxx  }; // SUB
-      4'd2  : cs = { 2'd1, 2'bxx, 2'b00, 2'bxx, 3'bxx  }; // SLL
-      4'd3  : cs = { 2'd2, 2'bxx, 2'bxx, 2'b01, 3'bxx  }; // OR
-      4'd4  : cs = { 2'd0, 2'b10, 2'bxx, 2'bxx, 3'bxx  }; // SLT
-      4'd5  : cs = { 2'd0, 2'b11, 2'bxx, 2'bxx, 3'bxx  }; // SLTU
-      4'd6  : cs = { 2'd2, 2'bxx, 2'bxx, 2'b00, 3'bxx  }; // AND
-      4'd7  : cs = { 2'd2, 2'bxx, 2'bxx, 2'b10, 3'bxx  }; // XOR
-      4'd8  : cs = { 2'd2, 2'bxx, 2'bxx, 2'b11, 3'bxx  }; // NOR
-      4'd9  : cs = { 2'd1, 2'bxx, 2'b01, 2'bxx, 3'bxx  }; // SRL
-      4'd10 : cs = { 2'd1, 2'bxx, 2'b11, 2'bxx, 3'bxx  }; // SRA
+      // Vector
+      4'd0  : cs = { 2'd0, 4'b0000, 2'bxx, 3'bxxx}; // ADDV
+      4'd1  : cs = { 2'd0, 4'b0001, 2'bxx, 3'bxxx}; // SUBV
+      4'd2  : cs = { 2'd0, 4'b0010, 2'bxx, 3'bxxx}; // SLTV
+      4'd3  : cs = { 2'd0, 4'b0011, 2'bxx, 3'bxxx}; // SEQV
+      4'd4  : cs = { 2'd2, 4'bxxxx, 2'bxx, 3'b000}; // ANDV
+      4'd10 : cs = { 2'd0, 4'b1000, 2'bxx, 3'b000}; // REDSUM
+      // Scalar
+      4'd5  : cs = { 2'd0, 4'b0100, 2'bxx, 3'bxxx}; // ADDX
+      4'd6  : cs = { 2'd0, 4'b0101, 2'bxx, 3'bxxx}; // SUBX
+      4'd7  : cs = { 2'd0, 4'b0110, 2'bxx, 3'bxxx}; // SLTX
+      4'd8  : cs = { 2'd0, 4'b0111, 2'bxx, 3'bxxx}; // SEQX
+      4'd9  : cs = { 2'd2, 4'bxxxx, 2'bxx, 3'b100}; // ANDX
+
+      //4'd2  : cs = { 2'd1, 3'bxx, 2'b00, 2'bxx, 2'bxx  }; // SLL
+      //4'd3  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b01, 2'bxx  }; // OR
+      //4'd4  : cs = { 2'd0, 3'b010, 2'bxx, 2'bxx, 2'bxx  }; // SLT
+      //4'd5  : cs = { 2'd0, 3'b011, 2'bxx, 2'bxx, 2'bxx  }; // SLTU
+      //4'd6  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b00, 2'bxx  }; // AND
+      //4'd7  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b10, 2'bxx  }; // XOR
+      //4'd8  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b11, 2'bxx  }; // NOR
+      //4'd9  : cs = { 2'd1, 3'bxx, 2'b01, 2'bxx, 2'bxx  }; // SRL
+      //4'd10 : cs = { 2'd1, 3'bxx, 2'b11, 2'bxx, 2'bxx  }; // SRA
     endcase
 
     { out_mux_sel, fn_addsub, fn_shifter, fn_logical } = cs;
@@ -180,45 +230,52 @@ module riscv_CoreDpathAlu
 
   // -- Functional units -------------------------------------------------
 
-  wire [31:0] addsub_out;
+  wire [255:0] addsub_out;
 
   riscv_CoreDpathAluAddSub addsub
   (
     .addsub_fn  (fn_addsub),
-    .alu_a      (in0),
-    .alu_b      (in1),
+    .vec_a      (vecin0),
+    .vec_b      (vecin1),
+    .scalar     (in1),
+    .vm         (vm),
+    .vl         (vl),
     .result     (addsub_out)
   );
 
-  wire [31:0] shifter_out;
+  /*
+  wire [255:0] shifter_out;
 
   riscv_CoreDpathAluShifter shifter
   (
     .shift_fn   (fn_shifter),
-    .alu_a      (in1),
-    .alu_b      (in0),
+    .vec_a      (vecin1),
+    .vec_b      (vecin0),
+    .vm         (vm),
+    .vl         (vl),
     .result     (shifter_out)
   );
-
-  wire [31:0] logical_out;
+  */
+  
+  wire [255:0] logical_out;
 
   riscv_CoreDpathAluLogical logical
   (
     .logical_fn (fn_logical),
-    .alu_a      (in0),
-    .alu_b      (in1),
+    .vec_a      (vecin0),
+    .vec_b      (vecin1),
+    .scalar     (in1),
+    .vm         (vm),
+    .vl         (vl),
     .result     (logical_out)
   );
 
-  wire [31:0] muldiv_out;
-
-
   // -- Final output mux -------------------------------------------------
 
-  assign out = ( out_mux_sel == 2'd0 ) ? addsub_out
-             : ( out_mux_sel == 2'd1 ) ? shifter_out
-             : ( out_mux_sel == 2'd2 ) ? logical_out
-             :                           32'bx;
+  assign vecout = ( out_mux_sel == 2'd0 ) ? addsub_out
+  //            : ( out_mux_sel == 2'd1 ) ? shifter_out
+                : ( out_mux_sel == 2'd2 ) ? logical_out
+                :                           256'bx;
 
 endmodule
 

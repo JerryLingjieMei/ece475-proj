@@ -454,7 +454,6 @@ module riscv_CoreCtrl
         `RISCV_INST_MSG_SLTVX   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_SLTVV   :cs={y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-
 		endcase
 
 
