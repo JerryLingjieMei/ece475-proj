@@ -162,7 +162,7 @@
 `define RISCV_INST_MSG_SLTVI    32'b???????_?????_?????_001_?????_0000011 // sh
 
 `define RISCV_INST_MSG_SEQVI    32'b???????_?????_?????_010_?????_1110011 // csrrs
-`define RISCV_INST_MSG_LUIVI    32'b???????_?????_?????_011_?????_1110011 // csrrc
+`define RISCV_INST_MSG_LUIVX    32'b???????_?????_?????_011_?????_1110011 // csrrc
 `define RISCV_INST_MSG_MVXS     32'b???????_?????_?????_110_?????_1110011 // csrrsi
 `define RISCV_INST_MSG_IDV      32'b???????_?????_?????_111_?????_1110011 // csrrci
 
@@ -179,9 +179,9 @@
 // Control bundle
 //------------------------------------------------------------------------
 `define RISCV_INST_MSG_CS_SZ      42
-`define RISCV_INST_MSG_DEST_VEC   41:41
-`define RISCV_INST_MSG_OP0_VEC    40:40
-`define RISCV_INST_MSG_OP1_VEC    39:39
+`define RISCV_INST_MSG_RF_VWEN   41:41
+`define RISCV_INST_MSG_RS1_VWEN    40:40
+`define RISCV_INST_MSG_RS2_VWEN    39:39
 `define RISCV_INST_MSG_INST_VAL   38:38
 `define RISCV_INST_MSG_INST_VAL   38:38
 `define RISCV_INST_MSG_INST_VAL   38:38
@@ -195,7 +195,7 @@
 `define RISCV_INST_MSG_ALU_FN     24:21
 `define RISCV_INST_MSG_MULDIV_FN  20:18
 `define RISCV_INST_MSG_MULDIV_EN  17:17
-`define RISCV_INST_MSG_VEC_EN  17:17
+`define RISCV_INST_MSG_MULDIV_EN  17:17
 `define RISCV_INST_MSG_MULDIV_SEL 16:16
 `define RISCV_INST_MSG_EX_SEL     15:15
 `define RISCV_INST_MSG_MEM_REQ    14:13
@@ -440,7 +440,7 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_SV      : $sformat( dasm, "sv     v%02d, r%02d, %08x     ", rd,  rs1, imm_s    );
         `RISCV_INST_MSG_SLTVI   : $sformat( dasm, "sltvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_s    );
         `RISCV_INST_MSG_SEQVI   : $sformat( dasm, "seqvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_i    );
-        `RISCV_INST_MSG_LLI     : $sformat( dasm, "luivi  v%02d     ", rd , rs1   );
+        `RISCV_INST_MSG_LLI     : $sformat( dasm, "luivx  v%02d     ", rd , rs1   );
         `RISCV_INST_MSG_MVXV    : $sformat( dasm, "mvxv   r%02d, v%02d     ", rd,  rs1    );
         `RISCV_INST_MSG_IDV     : $sformat( dasm, "idv    v%02d     ", rd    );
 
@@ -528,7 +528,7 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_SV      : $sformat( minidasm, "sv    "   );
         `RISCV_INST_MSG_SLTVI   : $sformat( minidasm, "sltvi "    );
         `RISCV_INST_MSG_SEQVI   : $sformat( minidasm, "seqvi "    );
-        `RISCV_INST_MSG_LUIVI     : $sformat( minidasm, "luivi "  );
+        `RISCV_INST_MSG_LUIVX     : $sformat( minidasm, "luivx "  );
 
         `RISCV_INST_MSG_MVXV    : $sformat( minidasm, "mvxv "  );
         `RISCV_INST_MSG_IDV     : $sformat( minidasm, "idv "  );

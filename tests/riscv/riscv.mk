@@ -49,4 +49,5 @@ riscv_srcs += \
   riscv-bug.S \
   riscv-byp.S \
   riscv-waw.S \
+  riscv-vadd.S \
 
