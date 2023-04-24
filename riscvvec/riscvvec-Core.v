@@ -82,6 +82,7 @@ module riscv_Core
 	wire  [2:0] rdata1_byp_mux_sel_Dhl;
   wire  [2:0] vdata0_byp_mux_sel_Dhl;
 	wire  [2:0] vdata1_byp_mux_sel_Dhl;
+	wire        rs2_ven_Xhl;
 
   wire        branch_cond_eq_Xhl;
   wire        branch_cond_ne_Xhl;
@@ -190,6 +191,7 @@ module riscv_Core
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
     .vdata0_byp_mux_sel_Dhl (vdata0_byp_mux_sel_Dhl),
 		.vdata1_byp_mux_sel_Dhl (vdata1_byp_mux_sel_Dhl),
+		.rs2_ven_Xhl            (rs2_ven_Xhl),
 
     // Control Signals (dpath->ctrl)
 
@@ -258,6 +260,7 @@ module riscv_Core
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
     .vdata0_byp_mux_sel_Dhl (vdata0_byp_mux_sel_Dhl),
 		.vdata1_byp_mux_sel_Dhl (vdata1_byp_mux_sel_Dhl),
+		.rs2_ven_Xhl            (rs2_ven_Xhl),
 
 
     // Control Signals (dpath->ctrl)

@@ -57,6 +57,7 @@ module riscv_CoreDpath
 	input   [2:0] rdata1_byp_mux_sel_Dhl,
   input   [2:0] vdata0_byp_mux_sel_Dhl,
 	input   [2:0] vdata1_byp_mux_sel_Dhl,
+	input         rs2_ven_Xhl;
 
 	input					stall_X2hl,
 	input					stall_X3hl,
@@ -576,6 +577,7 @@ module riscv_CoreDpath
     .vecin0  (op0_mux_out_Xhl),
     .vecin1  (op1_mux_out_Xhl),
     .in1     (op1_mux_out_Xhl),
+    .in_sel  (rs2_ven_Xhl),
     .fn      (alu_fn_Xhl),
     .vecout  (alu_vout_Xhl),
     .vl      (vl_Xhl),

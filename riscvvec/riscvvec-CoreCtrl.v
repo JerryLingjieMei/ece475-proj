@@ -56,6 +56,7 @@ module riscv_CoreCtrl
 	output  [2:0] rdata1_byp_mux_sel_Dhl,
   output  [2:0] vdata0_byp_mux_sel_Dhl,
 	output  [2:0] vdata1_byp_mux_sel_Dhl,
+	output        rs2_ven_Xhl,
 
 	output				stall_X2hl,
 	output				stall_X3hl,
@@ -677,6 +678,7 @@ module riscv_CoreCtrl
       dmemreq_val_Xhl      <= dmemreq_val_Dhl;
       dmemresp_mux_sel_Xhl <= dmemresp_mux_sel_Dhl;
       wb_mux_sel_Xhl       <= wb_mux_sel_Dhl;
+      rs2_ven_Xhl          <= rs2_ven_Dhl;
       rf_wen_Xhl           <= rf_wen_Dhl;
       rf_vwen_Xhl           <= rf_vwen_Dhl;
       rf_waddr_Xhl         <= rf_waddr_Dhl;
