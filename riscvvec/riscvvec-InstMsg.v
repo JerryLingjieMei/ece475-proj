@@ -178,7 +178,8 @@
 //------------------------------------------------------------------------
 // Control bundle
 //------------------------------------------------------------------------
-`define RISCV_INST_MSG_CS_SZ      42
+`define RISCV_INST_MSG_CS_SZ      43
+`define RISCV_INST_MSG_VLWEN   42:42
 `define RISCV_INST_MSG_RF_VWEN   41:41
 `define RISCV_INST_MSG_RS1_VWEN    40:40
 `define RISCV_INST_MSG_RS2_VWEN    39:39
@@ -381,7 +382,7 @@ module riscv_InstMsgDisasm
       $sformat( dasm,                             "x                        " );
     end
     else begin
-
+    casez
        ( msg )
         // RISCV32I
         `RISCV_INST_MSG_NOP     : $sformat( dasm, "nop                      "                         );
@@ -440,8 +441,8 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_SV      : $sformat( dasm, "sv     v%02d, r%02d, %08x     ", rd,  rs1, imm_s    );
         `RISCV_INST_MSG_SLTVI   : $sformat( dasm, "sltvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_s    );
         `RISCV_INST_MSG_SEQVI   : $sformat( dasm, "seqvi  v%02d, v%02d, %08x     ", rd,  rs1, imm_i    );
-        `RISCV_INST_MSG_LLI     : $sformat( dasm, "luivx  v%02d     ", rd , rs1   );
-        `RISCV_INST_MSG_MVXV    : $sformat( dasm, "mvxv   r%02d, v%02d     ", rd,  rs1    );
+        `RISCV_INST_MSG_LUIVX     : $sformat( dasm, "luivx  v%02d     ", rd , rs1   );
+        `RISCV_INST_MSG_MVXS    : $sformat( dasm, "mvxv   r%02d, v%02d     ", rd,  rs1    );
         `RISCV_INST_MSG_IDV     : $sformat( dasm, "idv    v%02d     ", rd    );
 
         `RISCV_INST_MSG_ADDVX   : $sformat( dasm, "addvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
@@ -530,7 +531,7 @@ module riscv_InstMsgDisasm
         `RISCV_INST_MSG_SEQVI   : $sformat( minidasm, "seqvi "    );
         `RISCV_INST_MSG_LUIVX     : $sformat( minidasm, "luivx "  );
 
-        `RISCV_INST_MSG_MVXV    : $sformat( minidasm, "mvxv "  );
+        `RISCV_INST_MSG_MVXS    : $sformat( minidasm, "mvxv "  );
         `RISCV_INST_MSG_IDV     : $sformat( minidasm, "idv "  );
 
         `RISCV_INST_MSG_ADDVX   : $sformat( minidasm, "addvx "   );

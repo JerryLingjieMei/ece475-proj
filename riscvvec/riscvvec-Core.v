@@ -70,6 +70,7 @@ module riscv_Core
   wire        rf_wen_Whl;
   wire        rf_vwen_Whl;
   wire  [4:0] rf_waddr_Whl;
+  wire        rf_vlwen_Xhl;
   wire        stall_Fhl;
   wire        stall_Dhl;
   wire        stall_Xhl;
@@ -82,7 +83,7 @@ module riscv_Core
 	wire  [2:0] rdata1_byp_mux_sel_Dhl;
   wire  [2:0] vdata0_byp_mux_sel_Dhl;
 	wire  [2:0] vdata1_byp_mux_sel_Dhl;
-	wire        rs2_ven_Xhl;
+	wire        op1_ven_Xhl;
 
   wire        branch_cond_eq_Xhl;
   wire        branch_cond_ne_Xhl;
@@ -177,7 +178,8 @@ module riscv_Core
     .dmemresp_queue_val_Mhl (dmemresp_queue_val_Mhl),
     .wb_mux_sel_Mhl         (wb_mux_sel_Mhl),
     .rf_wen_out_Whl         (rf_wen_Whl),
-    .rf_vwen_out_Whl         (rf_vwen_Whl),
+    .rf_vwen_Whl            (rf_vwen_Whl),
+    .rf_vlwen_Xhl           (rf_vlwen_Xhl),
     .rf_waddr_Whl           (rf_waddr_Whl),
     .stall_Fhl              (stall_Fhl),
     .stall_Dhl              (stall_Dhl),
@@ -191,7 +193,7 @@ module riscv_Core
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
     .vdata0_byp_mux_sel_Dhl (vdata0_byp_mux_sel_Dhl),
 		.vdata1_byp_mux_sel_Dhl (vdata1_byp_mux_sel_Dhl),
-		.rs2_ven_Xhl            (rs2_ven_Xhl),
+		.op1_ven_Xhl            (op1_ven_Xhl),
 
     // Control Signals (dpath->ctrl)
 
@@ -246,7 +248,8 @@ module riscv_Core
     .dmemresp_queue_val_Mhl  (dmemresp_queue_val_Mhl),
     .wb_mux_sel_Mhl          (wb_mux_sel_Mhl),
     .rf_wen_Whl              (rf_wen_Whl),
-    .rf_vwen_Whl              (rf_vwen_Whl),
+    .rf_vwen_Whl             (rf_vwen_Whl),
+    .rf_vlwen_Xhl            (rf_vlwen_Xhl),
     .rf_waddr_Whl            (rf_waddr_Whl),
     .stall_Fhl               (stall_Fhl),
     .stall_Dhl               (stall_Dhl),
@@ -260,7 +263,7 @@ module riscv_Core
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
     .vdata0_byp_mux_sel_Dhl (vdata0_byp_mux_sel_Dhl),
 		.vdata1_byp_mux_sel_Dhl (vdata1_byp_mux_sel_Dhl),
-		.rs2_ven_Xhl            (rs2_ven_Xhl),
+		.op1_ven_Xhl            (op1_ven_Xhl),
 
 
     // Control Signals (dpath->ctrl)

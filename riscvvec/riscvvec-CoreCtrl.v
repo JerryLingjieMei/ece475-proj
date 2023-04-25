@@ -45,7 +45,8 @@ module riscv_CoreCtrl
   output        dmemresp_queue_val_Mhl,
   output        wb_mux_sel_Mhl,
   output        rf_wen_out_Whl,
-  output        rf_vwen_out_Whl,
+  output        rf_vwen_Whl,
+  output        rf_vlwen_Xhl,
   output  [4:0] rf_waddr_Whl,
   output        stall_Fhl,
   output        stall_Dhl,
@@ -56,7 +57,7 @@ module riscv_CoreCtrl
 	output  [2:0] rdata1_byp_mux_sel_Dhl,
   output  [2:0] vdata0_byp_mux_sel_Dhl,
 	output  [2:0] vdata1_byp_mux_sel_Dhl,
-	output        rs2_ven_Xhl,
+	output reg    op1_ven_Xhl,
 
 	output				stall_X2hl,
 	output				stall_X3hl,
@@ -367,93 +368,93 @@ module riscv_CoreCtrl
 
             //                                j     br       pc      op0      rs1 op1       rs2 alu       md       md md     ex      mem  mem   memresp wb      rf      csr
             //                            val taken type     muxsel  muxsel   en  muxsel    en  fn        fn       en muxsel muxsel  rq   len   muxsel  muxsel  wen wa  wen
-      `RISCV_INST_MSG_LUI     :cs={n,n,n, y,  n,    br_none, pm_p,   am_0,    n,  bm_imm_u, n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-      `RISCV_INST_MSG_AUIPC   :cs={n,n,n, y,  n,    br_none, pm_p,   am_pc,   n,  bm_imm_u, n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+      `RISCV_INST_MSG_LUI     :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_0,    n,  bm_imm_u, n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+      `RISCV_INST_MSG_AUIPC   :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_pc,   n,  bm_imm_u, n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-      `RISCV_INST_MSG_ADDI    :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-      `RISCV_INST_MSG_ORI     :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_or,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+      `RISCV_INST_MSG_ADDI    :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+      `RISCV_INST_MSG_ORI     :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_or,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-      `RISCV_INST_MSG_ADD     :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+      `RISCV_INST_MSG_ADD     :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-      `RISCV_INST_MSG_LW      :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_w, dmm_w,  wm_mem, y,  rd, n   };
-      `RISCV_INST_MSG_SW      :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_alu,   st,  ml_w, dmm_w,  wm_mem, n,  rx, n   };
+      `RISCV_INST_MSG_LW      :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_w, dmm_w,  wm_mem, y,  rd, n   };
+      `RISCV_INST_MSG_SW      :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_alu,   st,  ml_w, dmm_w,  wm_mem, n,  rx, n   };
 
-      `RISCV_INST_MSG_JAL     :cs={n,n,n, y,  y,    br_none, pm_j,   am_pc4,  n,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+      `RISCV_INST_MSG_JAL     :cs={n, n,n,n, y,  y,    br_none, pm_j,   am_pc4,  n,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-      `RISCV_INST_MSG_BNE     :cs={n,n,n, y,  n,    br_bne,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_xor,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
-      `RISCV_INST_MSG_BLT     :cs={n,n,n, y,  n,    br_blt,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
+      `RISCV_INST_MSG_BNE     :cs={n, n,n,n, y,  n,    br_bne,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_xor,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
+      `RISCV_INST_MSG_BLT     :cs={n, n,n,n, y,  n,    br_blt,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
 
-      `RISCV_INST_MSG_CSRW    :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, n,  rx, y   };
+      `RISCV_INST_MSG_CSRW    :cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, n,  rx, y   };
 
-			`RISCV_INST_MSG_JALR		:cs={n,n,n, y,  y,    br_none, pm_r,   am_pc4,  y,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_JALR		:cs={n, n,n,n, y,  y,    br_none, pm_r,   am_pc4,  y,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 			
-			`RISCV_INST_MSG_BEQ			:cs={n,n,n, y,  n,    br_beq,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_xor,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
-			`RISCV_INST_MSG_BGE			:cs={n,n,n, y,  n,    br_bge,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
-			`RISCV_INST_MSG_BLTU		:cs={n,n,n, y,  n,    br_bltu, pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
-			`RISCV_INST_MSG_BGEU		:cs={n,n,n, y,  n,    br_bgeu, pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
+			`RISCV_INST_MSG_BEQ			:cs={n, n,n,n, y,  n,    br_beq,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_xor,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
+			`RISCV_INST_MSG_BGE			:cs={n, n,n,n, y,  n,    br_bge,  pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
+			`RISCV_INST_MSG_BLTU		:cs={n, n,n,n, y,  n,    br_bltu, pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
+			`RISCV_INST_MSG_BGEU		:cs={n, n,n,n, y,  n,    br_bgeu, pm_b,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu,   nr,  ml_x, dmm_x,  wm_x,   n,  rx, n   };
 			
-// 			`RISCV_INST_MSG_LB			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_b, dmm_b,  wm_mem, y,  rd, n   };
-// 			`RISCV_INST_MSG_LH			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_h, dmm_h,  wm_mem, y,  rd, n   };
-// 			`RISCV_INST_MSG_LBU			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_b, dmm_bu, wm_mem, y,  rd, n   };
-// 			`RISCV_INST_MSG_LHU			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_h, dmm_hu, wm_mem, y,  rd, n   };
+// 			`RISCV_INST_MSG_LB			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_b, dmm_b,  wm_mem, y,  rd, n   };
+// 			`RISCV_INST_MSG_LH			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_h, dmm_h,  wm_mem, y,  rd, n   };
+// 			`RISCV_INST_MSG_LBU			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_b, dmm_bu, wm_mem, y,  rd, n   };
+// 			`RISCV_INST_MSG_LHU			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_alu,   ld,  ml_h, dmm_hu, wm_mem, y,  rd, n   };
 
 			
-// 			`RISCV_INST_MSG_SB			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_alu,   st,  ml_b, dmm_b,  wm_mem, n,  rx, n   };
-// 			`RISCV_INST_MSG_SH			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_alu,   st,  ml_h, dmm_h,  wm_mem, n,  rx, n   };
+// 			`RISCV_INST_MSG_SB			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_alu,   st,  ml_b, dmm_b,  wm_mem, n,  rx, n   };
+// 			`RISCV_INST_MSG_SH			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_alu,   st,  ml_h, dmm_h,  wm_mem, n,  rx, n   };
 			
-			`RISCV_INST_MSG_NOP			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, n,  bm_rdat,  n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, n,  rx, n   };
+			`RISCV_INST_MSG_NOP			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, n,  bm_rdat,  n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, n,  rx, n   };
 			
-			`RISCV_INST_MSG_SLTI		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_lt,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SLTIU		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_ltu,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SLTI		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_lt,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SLTIU		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_ltu,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 			
-			`RISCV_INST_MSG_XORI		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_xor,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_ANDI		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_and,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_XORI		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_xor,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_ANDI		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_and,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 			
-			`RISCV_INST_MSG_SLLI		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_shamt, n,  alu_sll,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SRLI		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_shamt, n,  alu_srl,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SRAI		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_shamt, n,  alu_sra,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SLLI		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_shamt, n,  alu_sll,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SRLI		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_shamt, n,  alu_srl,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SRAI		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_shamt, n,  alu_sra,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 			
-			`RISCV_INST_MSG_SUB			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SLL			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sll,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SLT			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SLTU		:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_ltu,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SUB			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sub,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SLL			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sll,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SLT			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SLTU		:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_ltu,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 			
-			`RISCV_INST_MSG_XOR			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_xor,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SRL			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_srl,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_SRA			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sra,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_OR			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_or,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-			`RISCV_INST_MSG_AND			:cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_and,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_XOR			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_xor,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SRL			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_srl,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_SRA			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_sra,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_OR			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_or,   md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+			`RISCV_INST_MSG_AND			:cs={n, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_and,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-// 			`RISCV_INST_MSG_MUL			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mul,  y, mdm_l, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-// 			`RISCV_INST_MSG_DIV			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_div,  y, mdm_l, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-// 			`RISCV_INST_MSG_DIVU		:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_divu, y, mdm_l, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-// 			`RISCV_INST_MSG_REM			:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_rem,  y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-// 			`RISCV_INST_MSG_REMU		:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_remu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_MUL			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mul,  y, mdm_l, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_DIV			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_div,  y, mdm_l, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_DIVU		:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_divu, y, mdm_l, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_REM			:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_rem,  y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_REMU		:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_remu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 //
-// 			`RISCV_INST_MSG_MULH		:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mul,  y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-// 			`RISCV_INST_MSG_MULHSU	:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulsu,y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-// 			`RISCV_INST_MSG_MULHU		:cs={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_MULH		:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mul,  y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_MULHSU	:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulsu,y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+// 			`RISCV_INST_MSG_MULHU		:cs={n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_LV      :cs={y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_SETVL   :cs={n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rd, n   };
-        `RISCV_INST_MSG_ADDVI   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_ANDVI   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_and,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_LV      :cs={n, y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SETVL   :cs={y, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rd, n   };
+        `RISCV_INST_MSG_ADDVI   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_ANDVI   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_and,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_SV      :cs={n,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rd, n   };
-        `RISCV_INST_MSG_SLTVI   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_SEQVI   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_LUIVX   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_MVXS    :cs={n,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  n,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_IDV     :cs={y,n,n, y,  n,    br_none, pm_p,   am_rdat, n,  bm_rdat,  n,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SV      :cs={n, n,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rd, n   };
+        `RISCV_INST_MSG_SLTVI   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SEQVI   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_LUIVX   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_MVXS    :cs={n, n,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  n,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_IDV     :cs={n, y,n,n, y,  n,    br_none, pm_p,   am_rdat, n,  bm_rdat,  n,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_ADDVX   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_ADDVV   :cs={y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_ANDVX   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_and,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_REDSUM  :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  n,  alu_redsum,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_SEQVX   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_SEQVV   :cs={y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_SLTVX   :cs={y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_SLTVV   :cs={y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_ADDVX   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_ADDVV   :cs={n, y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_ANDVX   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_and,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_REDSUM  :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  n,  alu_redsum,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SEQVX   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SEQVV   :cs={n, y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SLTVX   :cs={n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_SLTVV   :cs={n, y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_lt,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
 		endcase
 
@@ -476,8 +477,8 @@ module riscv_CoreCtrl
 
   wire       rs1_en_Dhl     = cs[`RISCV_INST_MSG_RS1_EN];
   wire       rs2_en_Dhl     = cs[`RISCV_INST_MSG_RS2_EN];
-  wire       rs1_ven_Dhl    = cs[`RISCV_INST_MSG_OP0_VEC];
-  wire       rs2_ven_Dhl    = cs[`RISCV_INST_MSG_OP1_VEC];
+  wire       rs1_ven_Dhl    = cs[`RISCV_INST_MSG_RS1_VWEN];
+  wire       rs2_ven_Dhl    = cs[`RISCV_INST_MSG_RS2_VWEN];
   // Operand Mux Select
 
   assign op0_mux_sel_Dhl = cs[`RISCV_INST_MSG_OP0_SEL];
@@ -521,7 +522,8 @@ module riscv_CoreCtrl
   // Register Writeback Controls
 
   wire rf_wen_Dhl         = cs[`RISCV_INST_MSG_RF_WEN];
-  wire rf_vwen_Dhl        = cs[`RISCV_INST_MSG_RF_VWEN]
+  wire rf_vwen_Dhl        = cs[`RISCV_INST_MSG_RF_VWEN];
+  wire rf_vlwen_Dhl       = cs[`RISCV_INST_MSG_VLWEN];
   wire [4:0] rf_waddr_Dhl = cs[`RISCV_INST_MSG_RF_WADDR];
 
   // CSR register write enable
@@ -651,6 +653,7 @@ module riscv_CoreCtrl
   reg        wb_mux_sel_Xhl;
   reg        rf_wen_Xhl;
   reg        rf_vwen_Xhl;
+  reg        rf_vlwen_Xhl;
   reg  [4:0] rf_waddr_Xhl;
   reg        csr_wen_Xhl;
   reg [11:0] csr_addr_Xhl;
@@ -678,9 +681,10 @@ module riscv_CoreCtrl
       dmemreq_val_Xhl      <= dmemreq_val_Dhl;
       dmemresp_mux_sel_Xhl <= dmemresp_mux_sel_Dhl;
       wb_mux_sel_Xhl       <= wb_mux_sel_Dhl;
-      rs2_ven_Xhl          <= rs2_ven_Dhl;
+      op1_ven_Xhl          <= rs2_ven_Dhl;
       rf_wen_Xhl           <= rf_wen_Dhl;
-      rf_vwen_Xhl           <= rf_vwen_Dhl;
+      rf_vwen_Xhl          <= rf_vwen_Dhl;
+      rf_vlwen_Xhl         <= rf_vlwen_Dhl;
       rf_waddr_Xhl         <= rf_waddr_Dhl;
       csr_wen_Xhl          <= csr_wen_Dhl;
       csr_addr_Xhl         <= csr_addr_Dhl;
@@ -960,7 +964,6 @@ module riscv_CoreCtrl
   // Only set register file wen if stage is valid
 
   assign rf_wen_out_Whl = ( inst_val_Whl && !stall_Whl && rf_wen_Whl );
-  assign rf_vwen_out_Whl = ( inst_val_Whl && !stall_Whl && rf_vwen_Whl );
 
   // Dummy squahs and stall signals
 
