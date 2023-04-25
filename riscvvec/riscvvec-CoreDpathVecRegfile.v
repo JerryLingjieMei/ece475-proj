@@ -17,7 +17,7 @@ module riscv_CoreDpathVectorRegfile
   input  [255:0]wvec_p  // Write vec (sample on rising clk edge)
   input         wvlen_p,
   input  [4:0]  wvl_p,
-  output [5:0]  vl
+  output [4:0]  vl
 );
 
   // We use an array of 32 bit register for the regfile itself
@@ -34,7 +34,7 @@ module riscv_CoreDpathVectorRegfile
     if ( wen_p && (waddr_p != 5'b0) )
       registers[waddr_p] <= wvec_p;
     if (wvlen_p)
-      vl  <=  wvl;
+      vl  <=  wvl_p;
   end
 
 endmodule

@@ -533,12 +533,16 @@ module riscv_CoreDpath
   (
     .clk     (clk)
     .raddr0  (rf_raddr0_Dhl),
-    .rdata0  (rf_vdata0_Dhl),
+    .rvec0   (rf_vdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
-    .rdata1  (rf_vdata1_Dhl),
+    .rvec1   (rf_vdata1_Dhl),
     .wen_p   (rf_vwen_Whl),
     .waddr_p (rf_waddr_Whl),
-    .wdata_p (wb_mux_vout_Whl)
+    .wvec_p  (wb_mux_vout_Whl),
+    .wvlen_p (),
+    .wvl_p   (),
+    .vl      (vl_Dhl),
+
   );
 
   // ALU
