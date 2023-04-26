@@ -264,6 +264,7 @@ module riscv_CoreCtrl
   localparam alu_sra  = 4'd10;
   localparam alu_redsum  = 4'd11;
   localparam alu_eq  = 4'd12;
+  localparam alu_idv  = 4'd13;
 
   // Muldiv Function
 
