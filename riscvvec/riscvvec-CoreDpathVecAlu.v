@@ -17,7 +17,7 @@ module riscv_CoreDpathAluAddSub
   input      [31:0]  scalar,    // Scalar input
   input              vm,        // vector mask
   input              vl,        // vector length
-  output reg [255:0] result     // result
+  output reg [255:0] result,    // result
 );
 
 // Iterate through vector length
@@ -156,17 +156,31 @@ genvar i;
       wire elem_a = vec_a[msb,lsb];
       wire elem_b = (addsub_fn[2]) ? scalar : vec_b[msb,lsb];
 
+      result[msb,lsb]
+        = ( logical_fn[1:0] == 2'b00 ) ?  ( elem_a & elem_b ) :
+          ( logical_fn[1:0] == 2'b01 ) ?  ( elem_a | elem_b ) :
+          ( logical_fn[1:0] == 2'b10 ) ?  ( elem_a ^ elem_b ) :
+          ( logical_fn[1:0] == 2'b11 ) ? ~( elem_a | elem_b ) :
+                                          ( 32'bx );
+                                 
     end
   end
 
   endgenerate
 
-  assign result[msb,lsb]
-    = ( logical_fn[1:0] == 2'b00 ) ?  ( elem_a & elem_b ) :
-      ( logical_fn[1:0] == 2'b01 ) ?  ( elem_a | elem_b ) :
-      ( logical_fn[1:0] == 2'b10 ) ?  ( elem_a ^ elem_b ) :
-      ( logical_fn[1:0] == 2'b11 ) ? ~( elem_a | elem_b ) :
-                                 ( 32'bx );
+endmodule
+
+module riscv_CoreDpathAluScalarOutput
+(
+  input  [ 1:0]  scalar_fn, // 00 = mvxs, 01 = idv
+  input  [255:0] vec_a,     // vector input
+  output [31:0]  out        // scalar output
+);
+
+assign out
+        = ( scalar_fn == 00 ) ? vec_a[31:0] :
+          ( scalar_fn == 01 ) ? 32'd0       : // I don't understand what IDV does yet
+                                32'bx;
 
 endmodule
 
@@ -182,14 +196,15 @@ module riscv_CoreDpathVecAlu
   input  [3:0]   fn,
   input          vm,
   input          vl,
-  output [255:0] vecout
+  output [255:0] vecout,
+  output [31:0]  out
 );
 
   // -- Decoder ----------------------------------------------------------
 
   reg [1:0] out_mux_sel;
   reg [3:0] fn_addsub;
-  reg [1:0] fn_shifter;
+  reg [1:0] fn_scalar;
   reg [2:0] fn_logical;
 
   reg [10:0] cs;
@@ -205,7 +220,8 @@ module riscv_CoreDpathVecAlu
       4'd2  : cs = { 2'd0, 4'b0010, 2'bxx, 3'bxxx}; // SLTV
       4'd3  : cs = { 2'd0, 4'b0011, 2'bxx, 3'bxxx}; // SEQV
       4'd4  : cs = { 2'd2, 4'bxxxx, 2'bxx, 3'b000}; // ANDV
-      4'd10 : cs = { 2'd0, 4'b1000, 2'bxx, 3'b000}; // REDSUM
+      4'd10 : cs = { 2'd0, 4'b1000, 2'bxx, 3'bxxx}; // REDSUM
+
       // Scalar
       4'd5  : cs = { 2'd0, 4'b0100, 2'bxx, 3'bxxx}; // ADDX
       4'd6  : cs = { 2'd0, 4'b0101, 2'bxx, 3'bxxx}; // SUBX
@@ -213,18 +229,12 @@ module riscv_CoreDpathVecAlu
       4'd8  : cs = { 2'd0, 4'b0111, 2'bxx, 3'bxxx}; // SEQX
       4'd9  : cs = { 2'd2, 4'bxxxx, 2'bxx, 3'b100}; // ANDX
 
-      //4'd2  : cs = { 2'd1, 3'bxx, 2'b00, 2'bxx, 2'bxx  }; // SLL
-      //4'd3  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b01, 2'bxx  }; // OR
-      //4'd4  : cs = { 2'd0, 3'b010, 2'bxx, 2'bxx, 2'bxx  }; // SLT
-      //4'd5  : cs = { 2'd0, 3'b011, 2'bxx, 2'bxx, 2'bxx  }; // SLTU
-      //4'd6  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b00, 2'bxx  }; // AND
-      //4'd7  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b10, 2'bxx  }; // XOR
-      //4'd8  : cs = { 2'd2, 3'bxx, 2'bxx, 2'b11, 2'bxx  }; // NOR
-      //4'd9  : cs = { 2'd1, 3'bxx, 2'b01, 2'bxx, 2'bxx  }; // SRL
-      //4'd10 : cs = { 2'd1, 3'bxx, 2'b11, 2'bxx, 2'bxx  }; // SRA
+      // Scalar Output
+      4'd11 : cs = { 2'd1, 4'bxxxx, 2'b00, 3'bxxx}; // MVXS
+      4'd12 : cs = { 2'd1, 4'bxxxx, 2'b01, 3'bxxx}; // IDV
     endcase
 
-    { out_mux_sel, fn_addsub, fn_shifter, fn_logical } = cs;
+    { out_mux_sel, fn_addsub, fn_scalar, fn_logical } = cs;
 
   end
 
@@ -243,12 +253,21 @@ module riscv_CoreDpathVecAlu
     .result     (addsub_out)
   );
 
+  wire [31:0] scalar_out
+
+  riscv_CoreDpathAluScalarOutput scalar
+  (
+    .scalar_fn  (fn_scalar),
+    .vec_a      (vecin0),
+    .out        (scalar_out)
+  );
+
   /*
   wire [255:0] shifter_out;
 
   riscv_CoreDpathAluShifter shifter
   (
-    .shift_fn   (fn_shifter),
+    .shift_fn   (fn_scalar),
     .vec_a      (vecin1),
     .vec_b      (vecin0),
     .vm         (vm),
@@ -267,15 +286,18 @@ module riscv_CoreDpathVecAlu
     .scalar     (in1),
     .vm         (vm),
     .vl         (vl),
-    .result     (logical_out)
+    .result     (logical_vout)
   );
 
   // -- Final output mux -------------------------------------------------
 
   assign vecout = ( out_mux_sel == 2'd0 ) ? addsub_out
   //            : ( out_mux_sel == 2'd1 ) ? shifter_out
-                : ( out_mux_sel == 2'd2 ) ? logical_out
+                : ( out_mux_sel == 2'd2 ) ? logical_vout
                 :                           256'bx;
+
+  assign out    = ( out_mux_sel == 2'd1 ) ? scalar_out
+                :                           32'bx;
 
 endmodule
 

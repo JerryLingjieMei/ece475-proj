@@ -34,6 +34,7 @@ module riscv_CoreDpath
   input   [2:0] op1_mux_sel_Dhl,
   input  [31:0] inst_Dhl,
   input   [3:0] alu_fn_Xhl,
+  input   [3:0] vecalu_fn_Xhl,
   input   [2:0] muldivreq_msg_fn_Dhl,
   input         muldivreq_val,
   output        muldivreq_rdy,
@@ -302,8 +303,9 @@ module riscv_CoreDpath
 
   // ALU
 
-  wire [31:0] alu_out_Xhl;
-  wire [255:0] alu_vout_Xhl;
+  wire [31:0]   alu_out_Xhl;
+  wire [255:0]  vecalu_vout_Xhl;
+  wire [31:0]   vecalu_sout_Xhl;
 
   // Branch condition logic
 
@@ -320,8 +322,9 @@ module riscv_CoreDpath
   assign dmemreq_msg_addr = alu_out_Xhl;
   assign dmemreq_msg_data = wdata_Xhl;
 
-  wire [31:0] execute_mux_out_Xhl = alu_out_Xhl;
-  wire [255:0] execute_mux_vout_Xhl = alu_vout_Xhl;
+  wire [31:0]   execute_mux_out_Xhl = alu_out_Xhl;
+  wire [255:0]  execute_mux_vout_Xhl = vecalu_vout_Xhl;
+  wire [31:0]   execute_mux_sout_Xhl = vecalu_sout_Xhl;
 
  
   //----------------------------------------------------------------------
@@ -331,6 +334,7 @@ module riscv_CoreDpath
   reg  [31:0] pc_Mhl;
   reg  [31:0] execute_mux_out_Mhl;
   reg  [31:0] execute_mux_vout_Mhl;
+  reg  [31:0] execute_mux_sout_Mhl;
   reg  [31:0] wdata_Mhl;
 
   always @ (posedge clk) begin
@@ -338,6 +342,7 @@ module riscv_CoreDpath
       pc_Mhl              <= pc_Xhl;
       execute_mux_out_Mhl <= execute_mux_out_Xhl;
       execute_mux_vout_Mhl <= execute_mux_vout_Xhl;
+      execute_mux_sout_Mhl <= execute_mux_sout_Mhl;
       wdata_Mhl           <= wdata_Xhl;
     end
   end
@@ -400,12 +405,14 @@ module riscv_CoreDpath
   wire [31:0] wb_mux_out_Mhl
     = ( wb_mux_sel_Mhl == 1'd0 ) ? execute_mux_out_Mhl
     : ( wb_mux_sel_Mhl == 1'd1 ) ? dmemresp_queue_mux_out_Mhl
+    //( wb_mux_sel_Mhl == 2'd2 ) ? execute_mux_out_sout_Mhl  // Maybe add this to writeback scalar result from vector alu (and add extra bit to wb_mux_sel_Mhl)
     :                              32'bx;
     
    wire [255:0] wb_mux_vout_Mhl
     = ( wb_mux_sel_Mhl == 1'd0 ) ? execute_mux_vout_Mhl
     : ( wb_mux_sel_Mhl == 1'd1 ) ? dmemresp_queue_mux_vout_Mhl
-    :                              1024'bx;
+    :                              256'bx;
+
 
 	//----------------------------------------------------------------------
   // X2 <- M
@@ -581,12 +588,11 @@ module riscv_CoreDpath
     .vecin0  (op0_mux_out_Xhl),
     .vecin1  (op1_mux_out_Xhl),
     .in1     (op1_mux_out_Xhl),
-    .in_sel  (rs2_ven_Xhl),
-    .fn      (alu_fn_Xhl),
-    .vecout  (alu_vout_Xhl),
+    //.in_sel  (rs2_ven_Xhl),     // What's this for? Isn't the input always rs1?
+    .fn      (vecalu_fn_Xhl),
+    .vecout  (vecalu_vout_Xhl),
     .vl      (vl_Xhl),
-    .vecout  (alu_vec_out_Xhl)
-    .out     (alu_out_Xhl)
+    .out     (vecalu_sout_Xhl)
   )
 
 endmodule
