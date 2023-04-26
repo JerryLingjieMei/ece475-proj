@@ -69,8 +69,6 @@ tests = \
   riscv-j.vmh \
   riscv-jalr.vmh \
   riscv-or.vmh \
-  riscv-sb.vmh \
-  riscv-sh.vmh \
   riscv-sll.vmh \
   riscv-slli.vmh \
   riscv-slt.vmh \
@@ -105,8 +103,6 @@ vec_tests = \
   riscv-j.vmh \
   riscv-jalr.vmh \
   riscv-or.vmh \
-  riscv-sb.vmh \
-  riscv-sh.vmh \
   riscv-sll.vmh \
   riscv-slli.vmh \
   riscv-slt.vmh \
@@ -120,6 +116,7 @@ vec_tests = \
   riscv-sub.vmh \
   riscv-xor.vmh \
   riscv-xori.vmh \
+  riscv-vadd.vmh \
 
 riscvlong_rtl_sim = riscvlong-sim
 riscvlong_rtl_rand_sim = riscvlong-randdelay-sim

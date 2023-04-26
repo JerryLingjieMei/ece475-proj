@@ -255,6 +255,28 @@ module riscv_sim;
 
       $write( "|" );
 
+      if ( proc.ctrl.bubble_X2hl )
+        $write( "  (-_-) " );
+      else if ( proc.ctrl.squash_X2hl )
+        $write( "-%s-", proc.ctrl.inst_msg_disasm_X2.minidasm );
+      else if ( proc.ctrl.stall_X2hl )
+        $write( "#%s ", proc.ctrl.inst_msg_disasm_X2.minidasm );
+      else
+        $write( " %s ", proc.ctrl.inst_msg_disasm_X2.minidasm );
+
+      $write( "|" );
+
+      if ( proc.ctrl.bubble_X3hl )
+        $write( "  (-_-) " );
+      else if ( proc.ctrl.squash_X3hl )
+        $write( "-%s-", proc.ctrl.inst_msg_disasm_X3.minidasm );
+      else if ( proc.ctrl.stall_X3hl )
+        $write( "#%s ", proc.ctrl.inst_msg_disasm_X3.minidasm );
+      else
+        $write( " %s ", proc.ctrl.inst_msg_disasm_X3.minidasm );
+
+      $write( "|" );
+
       // Writeback Stage
 
       if ( proc.ctrl.bubble_Whl )

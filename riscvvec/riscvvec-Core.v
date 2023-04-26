@@ -56,6 +56,7 @@ module riscv_Core
   wire  [2:0] op1_mux_sel_Dhl;
   wire [31:0] inst_Dhl;
   wire  [3:0] alu_fn_Xhl;
+  wire        alu_vsel_Xhl;
   wire  [2:0] muldivreq_msg_fn_Dhl;
   wire        muldivreq_val;
   wire        muldivreq_rdy;
@@ -83,6 +84,7 @@ module riscv_Core
 	wire  [2:0] rdata1_byp_mux_sel_Dhl;
   wire  [2:0] vdata0_byp_mux_sel_Dhl;
 	wire  [2:0] vdata1_byp_mux_sel_Dhl;
+	wire        op0_ven_Xhl;
 	wire        op1_ven_Xhl;
 
   wire        branch_cond_eq_Xhl;
@@ -166,6 +168,7 @@ module riscv_Core
     .op1_mux_sel_Dhl        (op1_mux_sel_Dhl),
     .inst_Dhl               (inst_Dhl),
     .alu_fn_Xhl             (alu_fn_Xhl),
+    .alu_vsel_Xhl           (alu_vsel_Xhl),
     .muldivreq_msg_fn_Dhl   (muldivreq_msg_fn_Dhl),
     .muldivreq_val          (muldivreq_val),
     .muldivreq_rdy          (muldivreq_rdy),
@@ -193,6 +196,7 @@ module riscv_Core
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
     .vdata0_byp_mux_sel_Dhl (vdata0_byp_mux_sel_Dhl),
 		.vdata1_byp_mux_sel_Dhl (vdata1_byp_mux_sel_Dhl),
+		.op0_ven_Xhl            (op0_ven_Xhl),
 		.op1_ven_Xhl            (op1_ven_Xhl),
 
     // Control Signals (dpath->ctrl)
@@ -236,6 +240,7 @@ module riscv_Core
     .op1_mux_sel_Dhl         (op1_mux_sel_Dhl),
     .inst_Dhl                (inst_Dhl),
     .alu_fn_Xhl              (alu_fn_Xhl),
+    .alu_vsel_Xhl            (alu_vsel_Xhl),
     .muldivreq_msg_fn_Dhl    (muldivreq_msg_fn_Dhl),
     .muldivreq_val           (muldivreq_val),
     .muldivreq_rdy           (muldivreq_rdy),
@@ -263,6 +268,7 @@ module riscv_Core
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
     .vdata0_byp_mux_sel_Dhl (vdata0_byp_mux_sel_Dhl),
 		.vdata1_byp_mux_sel_Dhl (vdata1_byp_mux_sel_Dhl),
+		.op0_ven_Xhl            (op0_ven_Xhl),
 		.op1_ven_Xhl            (op1_ven_Xhl),
 
 

@@ -34,6 +34,7 @@ module riscv_CoreDpath
   input   [2:0] op1_mux_sel_Dhl,
   input  [31:0] inst_Dhl,
   input   [3:0] alu_fn_Xhl,
+  input         alu_vsel_Xhl,
   input   [2:0] muldivreq_msg_fn_Dhl,
   input         muldivreq_val,
   output        muldivreq_rdy,
@@ -58,6 +59,7 @@ module riscv_CoreDpath
 	input   [2:0] rdata1_byp_mux_sel_Dhl,
   input   [2:0] vdata0_byp_mux_sel_Dhl,
 	input   [2:0] vdata1_byp_mux_sel_Dhl,
+	input         op0_ven_Xhl,
 	input         op1_ven_Xhl,
 
 	input					stall_X2hl,
@@ -220,20 +222,20 @@ module riscv_CoreDpath
 	wire [255:0] vdata0_byp_mux_out_Dhl
 		= ( vdata0_byp_mux_sel_Dhl == 3'd0 ) ? rf_vdata0_Dhl
 		: ( vdata0_byp_mux_sel_Dhl == 3'd1 ) ? execute_mux_vout_Xhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_out_Mhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_out_X2hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_out_X3hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_out_Whl
+	  : ( vdata0_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_vout_Mhl
+	  : ( vdata0_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_vout_X2hl
+		: ( vdata0_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_vout_X3hl
+		: ( vdata0_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_vout_Whl
 		:																			 32'bx;
 
 	// vdata1 bypass
-	wire [31:0] vdata1_byp_mux_out_Dhl
-		= ( vdata0_byp_mux_sel_Dhl == 3'd0 ) ? rf_vdata1_Dhl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd1 ) ? execute_mux_vout_Xhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_out_Mhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_out_X2hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_out_X3hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_out_Whl
+	wire [255:0] vdata1_byp_mux_out_Dhl
+		= ( vdata1_byp_mux_sel_Dhl == 3'd0 ) ? rf_vdata1_Dhl
+		: ( vdata1_byp_mux_sel_Dhl == 3'd1 ) ? execute_mux_vout_Xhl
+	  : ( vdata1_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_vout_Mhl
+	  : ( vdata1_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_vout_X2hl
+		: ( vdata1_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_vout_X3hl
+		: ( vdata1_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_vout_Whl
 		:																			 32'bx;
 
 
@@ -295,7 +297,9 @@ module riscv_CoreDpath
 
   // ALU
 
-  wire [31:0] alu_out_Xhl;
+  wire [31:0] vec_alu_out_Xhl;
+  wire [31:0] nvec_alu_out_Xhl;
+  wire [31:0] alu_out_Xhl = alu_vsel_Xhl ? vec_alu_out_Xhl: nvec_alu_out_Xhl;
   wire [255:0] alu_vout_Xhl;
 
   // Branch condition logic
@@ -315,7 +319,7 @@ module riscv_CoreDpath
 
   wire [31:0] execute_mux_out_Xhl = alu_out_Xhl;
   wire [255:0] execute_mux_vout_Xhl = alu_vout_Xhl;
-  wire [2:0] vl_Xhl;
+  wire [3:0] vl_Xhl;
 
  
   //----------------------------------------------------------------------
@@ -324,7 +328,7 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_Mhl;
   reg  [31:0] execute_mux_out_Mhl;
-  reg  [31:0] execute_mux_vout_Mhl;
+  reg  [255:0] execute_mux_vout_Mhl;
   reg  [31:0] wdata_Mhl;
 
   always @ (posedge clk) begin
@@ -424,13 +428,13 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_X3hl;
   reg  [31:0] wb_mux_out_X3hl;
-  reg  [255:0] wb_mux_vout_X3hl;
+  reg  [255:0] execute_mux_vout_X3hl;
 
   always @ (posedge clk) begin
     if( !stall_X3hl ) begin
       pc_X3hl                 <= pc_X2hl;
       wb_mux_out_X3hl         <= wb_mux_out_X2hl;
-      wb_mux_vout_X3hl         <= wb_mux_vout_X2hl;
+      execute_mux_vout_X3hl   <= wb_mux_vout_X2hl;
     end
   end
   
@@ -464,7 +468,7 @@ module riscv_CoreDpath
     if( !stall_Whl ) begin
       pc_Whl                 <= pc_X3hl;
       wb_mux_out_Whl         <= execute_mux_out_X3hl;
-      wb_mux_vout_Whl         <= wb_mux_out_X3hl;
+      wb_mux_vout_Whl         <= execute_mux_vout_X3hl;
     end
   end
 
@@ -545,7 +549,7 @@ module riscv_CoreDpath
     .in0  (op0_mux_out_Xhl),
     .in1  (op1_mux_out_Xhl),
     .fn   (alu_fn_Xhl),
-    .out  (alu_out_Xhl)
+    .out  (nvec_alu_out_Xhl)
   );
 
 	riscv_CoreDpathPipeMulDiv pmuldiv
@@ -573,12 +577,14 @@ module riscv_CoreDpath
   (
     .vin0  (op0_mux_vout_Xhl),
     .vin1  (op1_mux_vout_Xhl),
+    .in0     (op0_mux_out_Xhl),
+    .in0_ven  (op0_ven_Xhl),
     .in1     (op1_mux_out_Xhl),
-    .in_ven  (op1_ven_Xhl),
+    .in1_ven  (op1_ven_Xhl),
     .fn      (alu_fn_Xhl),
     .vout  (alu_vout_Xhl),
     .vl      (vl_Xhl),
-    .out     (alu_out_Xhl)
+    .out     (vec_alu_out_Xhl)
   );
 
 endmodule

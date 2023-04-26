@@ -17,16 +17,16 @@ module riscv_CoreDpathVectorRegfile
   input  [255:0]wdata_p,  // Write vec (sample on rising clk edge)
   input         wvlen_p,
   input  [31:0]  wvl_p,
-  output [2:0]  vl
+  output [3:0]  vl
 );
 
   // We use an array of 32 bit register for the regfile itself
   reg [255:0] registers[31:0];
-  reg [2:0]   vl;
+  reg [3:0]   vl;
 
   // Combinational read ports
-  assign rvec0 = registers[raddr0];
-  assign rvec1 = registers[raddr1];
+  assign rdata0 = registers[raddr0];
+  assign rdata1 = registers[raddr1];
 
   // Write port is active only when wen is asserted
   always @( posedge clk )
@@ -34,7 +34,7 @@ module riscv_CoreDpathVectorRegfile
     if ( wen_p && (waddr_p != 5'b0) )
       registers[waddr_p] <= wdata_p;
     if (wvlen_p)
-      vl  <=  wvl_p[2:0];
+      vl  <=  wvl_p[3:0];
   end
 
 endmodule
