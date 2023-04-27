@@ -9,7 +9,9 @@ riscvvec_deps = \
 riscvvec_srcs = \
   riscvvec-CoreDpath.v \
   riscvvec-CoreDpathRegfile.v \
+  riscvvec-CoreDpathVecRegfile.v \
   riscvvec-CoreDpathAlu.v \
+  riscvvec-CoreDpathVecAlu.v \
   riscvvec-CoreCtrl.v \
   riscvvec-Core.v \
   riscvvec-InstMsg.v \

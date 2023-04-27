@@ -34,7 +34,7 @@ module riscv_CoreDpath
   input   [2:0] op1_mux_sel_Dhl,
   input  [31:0] inst_Dhl,
   input   [3:0] alu_fn_Xhl,
-  input   [3:0] vecalu_fn_Xhl,
+  input         alu_vsel_Xhl,
   input   [2:0] muldivreq_msg_fn_Dhl,
   input         muldivreq_val,
   output        muldivreq_rdy,
@@ -48,6 +48,7 @@ module riscv_CoreDpath
   input         wb_mux_sel_Mhl,
   input         rf_wen_Whl,
   input         rf_vwen_Whl,
+  input         rf_vlwen_Xhl,
   input  [ 4:0] rf_waddr_Whl,
   input         stall_Fhl,
   input         stall_Dhl,
@@ -58,7 +59,8 @@ module riscv_CoreDpath
 	input   [2:0] rdata1_byp_mux_sel_Dhl,
   input   [2:0] vdata0_byp_mux_sel_Dhl,
 	input   [2:0] vdata1_byp_mux_sel_Dhl,
-	input         rs2_ven_Xhl;
+	input         op0_ven_Xhl,
+	input         op1_ven_Xhl,
 
 	input					stall_X2hl,
 	input					stall_X3hl,
@@ -172,12 +174,8 @@ module riscv_CoreDpath
   assign jump_targ_Dhl   = pc_Dhl + imm_uj_Dhl;
 
   // Vector Register File
-  wire [4:0]    vrf_raddr0_Dhl = inst_rs1_Dhl;
-  wire [255:0]  vrf_rdata0_Dhl;
-  wire [4:0]    vrf_raddr1_Dhl = inst_rs2_Dhl;
-  wire [255:0]  vrf_rdata1_Dhl;
-  wire [31:0]   vm_Dhl;
-  wire [5:0]    vl_Dhl;
+  wire [255:0]  rf_vdata0_Dhl;
+  wire [255:0]  rf_vdata1_Dhl;
 
   // Register file
 
@@ -221,23 +219,23 @@ module riscv_CoreDpath
 		: ( rdata1_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_out_Whl
 		:																			 32'bx;
 
-	wire [31:0] vdata0_byp_mux_out_Dhl
+	wire [255:0] vdata0_byp_mux_out_Dhl
 		= ( vdata0_byp_mux_sel_Dhl == 3'd0 ) ? rf_vdata0_Dhl
 		: ( vdata0_byp_mux_sel_Dhl == 3'd1 ) ? execute_mux_vout_Xhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_out_Mhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_out_X2hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_out_X3hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_out_Whl
+	  : ( vdata0_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_vout_Mhl
+	  : ( vdata0_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_vout_X2hl
+		: ( vdata0_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_vout_X3hl
+		: ( vdata0_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_vout_Whl
 		:																			 32'bx;
 
 	// vdata1 bypass
-	wire [31:0] vdata1_byp_mux_out_Dhl
-		= ( vdata0_byp_mux_sel_Dhl == 3'd0 ) ? rf_vdata1_Dhl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd1 ) ? execute_mux_vout_Xhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_out_Mhl
-	  : ( vdata0_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_out_X2hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_out_X3hl
-		: ( vdata0_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_out_Whl
+	wire [255:0] vdata1_byp_mux_out_Dhl
+		= ( vdata1_byp_mux_sel_Dhl == 3'd0 ) ? rf_vdata1_Dhl
+		: ( vdata1_byp_mux_sel_Dhl == 3'd1 ) ? execute_mux_vout_Xhl
+	  : ( vdata1_byp_mux_sel_Dhl == 3'd2 ) ? wb_mux_vout_Mhl
+	  : ( vdata1_byp_mux_sel_Dhl == 3'd3 ) ? wb_mux_vout_X2hl
+		: ( vdata1_byp_mux_sel_Dhl == 3'd4 ) ? execute_mux_vout_X3hl
+		: ( vdata1_byp_mux_sel_Dhl == 3'd5 ) ? wb_mux_vout_Whl
 		:																			 32'bx;
 
 
@@ -287,13 +285,9 @@ module riscv_CoreDpath
       branch_targ_Xhl <= branch_targ_Dhl;
       op0_mux_out_Xhl <= op0_mux_out_Dhl;
       op1_mux_out_Xhl <= op1_mux_out_Dhl;
-      op0_mux_out_Xhl <= op0_mux_vout_Dhl;
-      op1_mux_out_Xhl <= op1_mux_vout_Dhl;
+      op0_mux_vout_Xhl <= op0_mux_vout_Dhl;
+      op1_mux_vout_Xhl <= op1_mux_vout_Dhl;
       wdata_Xhl       <= wdata_Dhl;
-      op0_Xhl         <= vrf_rdata0_Dhl;
-      op1_Xhl         <= vrf_rdata1_Dhl;
-      vm_Xhl          <= vm_Dhl;
-      vl_Xhl          <= vl_Dhl;
     end
   end
 
@@ -303,9 +297,10 @@ module riscv_CoreDpath
 
   // ALU
 
-  wire [31:0]   alu_out_Xhl;
-  wire [255:0]  vecalu_vout_Xhl;
-  wire [31:0]   vecalu_sout_Xhl;
+  wire [31:0] vec_alu_out_Xhl;
+  wire [31:0] nvec_alu_out_Xhl;
+  wire [31:0] alu_out_Xhl = alu_vsel_Xhl ? vec_alu_out_Xhl: nvec_alu_out_Xhl;
+  wire [255:0] alu_vout_Xhl;
 
   // Branch condition logic
 
@@ -322,9 +317,9 @@ module riscv_CoreDpath
   assign dmemreq_msg_addr = alu_out_Xhl;
   assign dmemreq_msg_data = wdata_Xhl;
 
-  wire [31:0]   execute_mux_out_Xhl = alu_out_Xhl;
-  wire [255:0]  execute_mux_vout_Xhl = vecalu_vout_Xhl;
-  wire [31:0]   execute_mux_sout_Xhl = vecalu_sout_Xhl;
+  wire [31:0] execute_mux_out_Xhl = alu_out_Xhl;
+  wire [255:0] execute_mux_vout_Xhl = alu_vout_Xhl;
+  wire [3:0] vl_Xhl;
 
  
   //----------------------------------------------------------------------
@@ -333,8 +328,7 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_Mhl;
   reg  [31:0] execute_mux_out_Mhl;
-  reg  [31:0] execute_mux_vout_Mhl;
-  reg  [31:0] execute_mux_sout_Mhl;
+  reg  [255:0] execute_mux_vout_Mhl;
   reg  [31:0] wdata_Mhl;
 
   always @ (posedge clk) begin
@@ -437,13 +431,13 @@ module riscv_CoreDpath
 
   reg  [31:0] pc_X3hl;
   reg  [31:0] wb_mux_out_X3hl;
-  reg  [255:0] wb_mux_vout_X3hl;
+  reg  [255:0] execute_mux_vout_X3hl;
 
   always @ (posedge clk) begin
     if( !stall_X3hl ) begin
       pc_X3hl                 <= pc_X2hl;
       wb_mux_out_X3hl         <= wb_mux_out_X2hl;
-      wb_mux_vout_X3hl         <= wb_mux_vout_X2hl;
+      execute_mux_vout_X3hl   <= wb_mux_vout_X2hl;
     end
   end
   
@@ -477,7 +471,7 @@ module riscv_CoreDpath
     if( !stall_Whl ) begin
       pc_Whl                 <= pc_X3hl;
       wb_mux_out_Whl         <= execute_mux_out_X3hl;
-      wb_mux_vout_Whl         <= wb_mux_out_X3hl;
+      wb_mux_vout_Whl         <= execute_mux_vout_X3hl;
     end
   end
 
@@ -531,25 +525,24 @@ module riscv_CoreDpath
     .rdata0  (rf_rdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
     .rdata1  (rf_rdata1_Dhl),
-    .wen_p   (rf_wen_Whl),
+    .wen_p   (rf_wen_Whl && !rf_vwen_Whl),
     .waddr_p (rf_waddr_Whl),
     .wdata_p (wb_mux_out_Whl)
   );
 
   riscv_CoreDpathVectorRegfile vecrfile
   (
-    .clk     (clk)
+    .clk     (clk),
     .raddr0  (rf_raddr0_Dhl),
     .rvec0   (rf_vdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
-    .rvec1   (rf_vdata1_Dhl),
-    .wen_p   (rf_vwen_Whl),
+    .rdata1  (rf_vdata1_Dhl),
+    .wen_p   (rf_vwen_Whl && rf_vwen_Whl),
     .waddr_p (rf_waddr_Whl),
-    .wvec_p  (wb_mux_vout_Whl),
-    .wvlen_p (),
-    .wvl_p   (),
-    .vl      (vl_Dhl),
-
+    .wdata_p (wb_mux_vout_Whl),
+    .wvlen_p (rf_vlwen_Xhl),
+    .wvl_p (alu_out_Xhl),
+    .vl (vl_Xhl)
   );
 
   // ALU
@@ -559,7 +552,7 @@ module riscv_CoreDpath
     .in0  (op0_mux_out_Xhl),
     .in1  (op1_mux_out_Xhl),
     .fn   (alu_fn_Xhl),
-    .out  (alu_out_Xhl)
+    .out  (nvec_alu_out_Xhl)
   );
 
 	riscv_CoreDpathPipeMulDiv pmuldiv
@@ -585,15 +578,17 @@ module riscv_CoreDpath
 
   riscv_CoreDpathVecAlu vecalu
   (
-    .vecin0  (op0_mux_out_Xhl),
-    .vecin1  (op1_mux_out_Xhl),
+    .vin0  (op0_mux_vout_Xhl),
+    .vin1  (op1_mux_vout_Xhl),
+    .in0     (op0_mux_out_Xhl),
+    .in0_ven  (op0_ven_Xhl),
     .in1     (op1_mux_out_Xhl),
-    //.in_sel  (rs2_ven_Xhl),     // What's this for? Isn't the input always rs1?
-    .fn      (vecalu_fn_Xhl),
-    .vecout  (vecalu_vout_Xhl),
+    .in1_ven  (op1_ven_Xhl),
+    .fn      (alu_fn_Xhl),
+    .vout  (alu_vout_Xhl),
     .vl      (vl_Xhl),
-    .out     (vecalu_sout_Xhl)
-  )
+    .out     (vec_alu_out_Xhl)
+  );
 
 endmodule
 

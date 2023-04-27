@@ -5,13 +5,16 @@
 #include "riscv-macros.h"
 
         TEST_RISCV_BEGIN
-        li x1 1;
-        li x2 2;
-        // luivx v0, 0, r1
-        csrrc x0, 0, x1
-        // lui v1, 0, r2
-        csrrc x1, 0, x2
-        // vaddvv v2, v1, v0
-        mulh x2, x0, x1
+        // setvl 8, r0
+        lbu x0, 8(x0)
+        // luivi v0, 1, x0
+        csrrsi x0, 1, 0
+        // luivi v3, 5, x0
+        csrrsi x3, 5, 0
+        // vaddvv v2, v3, v0
+        mulh x2, x0, x3
+        // mvxs r1, v2
+        csrrc x3, 0, x2
+        TEST_CHECK_EQ(x3, 6)
         TEST_RISCV_END
 

@@ -19,20 +19,9 @@ riscv_srcs += \
   riscv-bge.S \
   riscv-bgeu.S \
   riscv-bltu.S \
-  riscv-div.S \
-  riscv-divu.S \
   riscv-j.S \
   riscv-jalr.S \
-  riscv-lb.S \
-  riscv-lbu.S \
-  riscv-lh.S \
-  riscv-lhu.S \
-  riscv-mul.S \
   riscv-or.S \
-  riscv-rem.S \
-  riscv-remu.S \
-  riscv-sb.S \
-  riscv-sh.S \
   riscv-sll.S \
   riscv-slli.S \
   riscv-slt.S \
@@ -48,6 +37,5 @@ riscv_srcs += \
   riscv-xori.S \
   riscv-bug.S \
   riscv-byp.S \
-  riscv-waw.S \
   riscv-vadd.S \
 
