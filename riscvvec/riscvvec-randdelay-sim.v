@@ -28,10 +28,10 @@ module riscv_sim;
   wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] imemresp_msg;
   wire                                 imemresp_val;
 
-  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq_msg;
+  wire [`VC_MEM_REQ_MSG_SZ(32,256)-1:0] dmemreq_msg;
   wire                                 dmemreq_val;
   wire                                 dmemreq_rdy;
-  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp_msg;
+  wire   [`VC_MEM_RESP_MSG_SZ(256)-1:0] dmemresp_msg;
   wire                                 dmemresp_val;
 
   //----------------------------------------------------------------------
@@ -90,7 +90,7 @@ module riscv_sim;
   #(
     .p_mem_sz    (1<<20), // max 20-bit address to index into memory
     .p_addr_sz   (32),    // high order bits will get truncated in memory
-    .p_data_sz   (32),
+    .p_data_sz   (256),
     .p_max_delay (4)
   )
   mem

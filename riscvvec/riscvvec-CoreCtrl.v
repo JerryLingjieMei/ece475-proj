@@ -21,7 +21,7 @@ module riscv_CoreCtrl
   // Data Memory Port
 
   output        dmemreq_msg_rw,
-  output  [1:0] dmemreq_msg_len,
+  output  [2:0] dmemreq_msg_len,
   output        dmemreq_val,
   input         dmemreq_rdy,
   input         dmemresp_val,
@@ -297,11 +297,11 @@ module riscv_CoreCtrl
 
   // Subword Memop Length
 
-  localparam ml_x  = 2'bx;
-  localparam ml_w  = 2'd0;
-  localparam ml_b  = 2'd1;
-  localparam ml_h  = 2'd2;
-  localparam ml_v  = 2'd3;
+  localparam ml_x  = 3'bx;
+  localparam ml_v  = 3'd0;
+  localparam ml_b  = 3'd1;
+  localparam ml_h  = 3'd2;
+  localparam ml_w  = 3'd3;
 
   // Memory Response Mux Select
 
@@ -311,6 +311,7 @@ module riscv_CoreCtrl
   localparam dmm_bu = 3'd2;
   localparam dmm_h  = 3'd3;
   localparam dmm_hu = 3'd4;
+  localparam dmm_v  = 3'd5;
 
   // Writeback Mux 1
 
@@ -439,12 +440,12 @@ module riscv_CoreCtrl
 // 			`RISCV_INST_MSG_MULHSU	:cs={n, n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulsu,y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 // 			`RISCV_INST_MSG_MULHU		:cs={n, n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_LV      :cs={n,   n,  y,   n,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,     md_x,    n, mdm_x, em_alu,  ld,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_LV      :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,     md_x,    n, mdm_x, em_alu,  ld,  ml_v, dmm_v,  wm_mem, y,  rd, n   };
         `RISCV_INST_MSG_SETVL   :cs={n,   y,  n,   n,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rx, n   };
         `RISCV_INST_MSG_ADDVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_ANDVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_and,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_SV      :cs={n,   n,  n,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_rdat,   y,  alu_add,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rx, n   };
+        `RISCV_INST_MSG_SV      :cs={n,   n,  n,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_rdat,   y,  alu_add,     md_x,    n, mdm_x, em_alu,  st,  ml_v, dmm_v,  wm_mem, n,  rx, n   };
         `RISCV_INST_MSG_SLTVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_lt,      md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_SEQVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_eq,      md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_LUIVI   :cs={n,   n,  y,   n,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
@@ -512,7 +513,7 @@ module riscv_CoreCtrl
   // Memory Controls
 
   wire       dmemreq_msg_rw_Dhl  = ( cs[`RISCV_INST_MSG_MEM_REQ] == st );
-  wire [1:0] dmemreq_msg_len_Dhl = cs[`RISCV_INST_MSG_MEM_LEN];
+  wire [2:0] dmemreq_msg_len_Dhl = cs[`RISCV_INST_MSG_MEM_LEN];
   wire       dmemreq_val_Dhl     = ( cs[`RISCV_INST_MSG_MEM_REQ] != nr );
 	wire			 is_ld_Dhl					 = ( cs[`RISCV_INST_MSG_MEM_REQ] == ld );
 
@@ -653,7 +654,7 @@ module riscv_CoreCtrl
   reg        muldiv_mux_sel_Xhl;
   reg        execute_mux_sel_Xhl;
   reg        dmemreq_msg_rw_Xhl;
-  reg  [1:0] dmemreq_msg_len_Xhl;
+  reg  [2:0] dmemreq_msg_len_Xhl;
   reg        dmemreq_val_Xhl;
   reg  [2:0] dmemresp_mux_sel_Xhl;
   reg        wb_mux_sel_Xhl;

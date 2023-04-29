@@ -28,13 +28,13 @@ module riscv_Core
 
   // Data Memory Request Port
 
-  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq_msg,
+  output [`VC_MEM_REQ_MSG_SZ(32,256)-1:0] dmemreq_msg,
   output                                 dmemreq_val,
   input                                  dmemreq_rdy,
 
   // Data Memory Response Port
 
-  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp_msg,
+  input [`VC_MEM_RESP_MSG_SZ(256)-1:0] dmemresp_msg,
   input                               dmemresp_val,
 
   // CSR Status Register Output to Host
@@ -46,10 +46,10 @@ module riscv_Core
   wire [31:0] imemresp_msg_data;
 
   wire        dmemreq_msg_rw;
-  wire  [1:0] dmemreq_msg_len;
+  wire  [2:0] dmemreq_msg_len;
   wire [31:0] dmemreq_msg_addr;
-  wire [31:0] dmemreq_msg_data;
-  wire [31:0] dmemresp_msg_data;
+  wire [255:0] dmemreq_msg_data;
+  wire [255:0] dmemresp_msg_data;
 
   wire  [1:0] pc_mux_sel_Phl;
   wire  [1:0] op0_mux_sel_Dhl;
@@ -108,11 +108,11 @@ module riscv_Core
     .bits (imemreq_msg)
   );
 
-  vc_MemReqMsgToBits#(32,32) dmemreq_msg_to_bits
+  vc_MemReqMsgToBits#(32,256) dmemreq_msg_to_bits
   (
     .type (dmemreq_msg_rw),
     .addr (dmemreq_msg_addr),
-    .len  (dmemreq_msg_len),
+    .len  ({ {2{1'b0}}, dmemreq_msg_len }),
     .data (dmemreq_msg_data),
     .bits (dmemreq_msg)
   );
@@ -129,7 +129,7 @@ module riscv_Core
     .data (imemresp_msg_data)
   );
 
-  vc_MemRespMsgFromBits#(32) dmemresp_msg_from_bits
+  vc_MemRespMsgFromBits#(256) dmemresp_msg_from_bits
   (
     .bits (dmemresp_msg),
     .type (),
@@ -231,6 +231,7 @@ module riscv_Core
 
     .dmemreq_msg_addr        (dmemreq_msg_addr),
     .dmemreq_msg_data        (dmemreq_msg_data),
+    .dmemreq_msg_len_Xhl     (dmemreq_msg_len),
     .dmemresp_msg_data       (dmemresp_msg_data),
 
     // Controls Signals (ctrl->dpath)

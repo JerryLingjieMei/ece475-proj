@@ -64,8 +64,6 @@ tests = \
   riscv-bge.vmh \
   riscv-bgeu.vmh \
   riscv-bltu.vmh \
-  riscv-div.vmh \
-  riscv-divu.vmh \
   riscv-j.vmh \
   riscv-jalr.vmh \
   riscv-or.vmh \
