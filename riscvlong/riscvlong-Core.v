@@ -184,7 +184,7 @@ module riscv_Core
 		.stall_X3hl             (stall_X3hl),
 		.rdata0_byp_mux_sel_Dhl (rdata0_byp_mux_sel_Dhl),
 		.rdata1_byp_mux_sel_Dhl (rdata1_byp_mux_sel_Dhl),
-
+    
     // Control Signals (dpath->ctrl)
 
     .branch_cond_eq_Xhl	    (branch_cond_eq_Xhl),

@@ -108,7 +108,7 @@
 module vc_MemReqMsgToBits
 #(
   parameter p_addr_sz = 32,
-  parameter p_data_sz = 256
+  parameter p_data_sz = 32
 )(
   // Input message
 
@@ -136,7 +136,7 @@ endmodule
 module vc_MemReqMsgFromBits
 #(
   parameter p_addr_sz = 32,
-  parameter p_data_sz = 256
+  parameter p_data_sz = 32
 )(
   // Input bits
 
@@ -165,7 +165,7 @@ endmodule
 module vc_MemReqMsgToStr
 #(
   parameter p_addr_sz = 32,
-  parameter p_data_sz = 256
+  parameter p_data_sz = 32
 )(
   input [`VC_MEM_REQ_MSG_SZ(p_addr_sz,p_data_sz)-1:0] msg
 );
@@ -238,4 +238,3 @@ endmodule
 `endif /* SYNTHESIS */
 
 `endif /* VC_MEM_REQ_MSG_V */
-

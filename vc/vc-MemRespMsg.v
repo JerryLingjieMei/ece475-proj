@@ -91,7 +91,7 @@
 
 module vc_MemRespMsgToBits
 #(
-  parameter p_data_sz = 256
+  parameter p_data_sz = 32
 )(
   // Input message
 
@@ -116,7 +116,7 @@ endmodule
 
 module vc_MemRespMsgFromBits
 #(
-  parameter p_data_sz = 256
+  parameter p_data_sz = 32
 )(
   // Input bits
 
@@ -142,7 +142,7 @@ endmodule
 `ifndef SYNTHESIS
 module vc_MemRespMsgToStr
 #(
-  parameter p_data_sz = 256
+  parameter p_data_sz = 32
 )(
   input [`VC_MEM_RESP_MSG_SZ(p_data_sz)-1:0] msg
 );
@@ -211,4 +211,3 @@ endmodule
 `endif /* SYNTHESIS */
 
 `endif /* VC_MEM_RESP_MSG_V */
-

@@ -301,7 +301,7 @@ module riscv_CoreCtrl
   localparam ml_v  = 3'd0;
   localparam ml_b  = 3'd1;
   localparam ml_h  = 3'd2;
-  localparam ml_w  = 3'd3;
+  localparam ml_w  = 3'd4;
 
   // Memory Response Mux Select
 
