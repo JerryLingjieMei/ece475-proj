@@ -112,7 +112,7 @@ module riscv_Core
   (
     .type (dmemreq_msg_rw),
     .addr (dmemreq_msg_addr),
-    .len  ({ {2{1'b0}}, dmemreq_msg_len }),
+    .len  (dmemreq_msg_len),
     .data (dmemreq_msg_data),
     .bits (dmemreq_msg)
   );
