@@ -3,7 +3,9 @@
 //=========================================================================
 
 `include "riscvvec-Core.v"
-`include "vc-TestDualPortRandDelayMem.v"
+//`include "vc-TestDualPortRandDelayMem.v"
+`include "vc-TestSinglePortRandDelayMem.v"
+
 
 module riscv_sim;
 
@@ -28,10 +30,10 @@ module riscv_sim;
   wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] imemresp_msg;
   wire                                 imemresp_val;
 
-  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq_msg;
+  wire [`VC_MEM_REQ_MSG_SZ(32,256)-1:0] dmemreq_msg;
   wire                                 dmemreq_val;
   wire                                 dmemreq_rdy;
-  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp_msg;
+  wire   [`VC_MEM_RESP_MSG_SZ(256)-1:0] dmemresp_msg;
   wire                                 dmemresp_val;
 
   //----------------------------------------------------------------------
@@ -85,7 +87,7 @@ module riscv_sim;
   //----------------------------------------------------------------------
   // Test Memory
   //----------------------------------------------------------------------
-
+  /*
   vc_TestDualPortRandDelayMem
   #(
     .p_mem_sz    (1<<20), // max 20-bit address to index into memory
@@ -122,6 +124,61 @@ module riscv_sim;
     .memresp1_rdy       (1'b1),
     .memresp1_msg       (dmemresp_msg)
    );
+   */
+
+   // Instruction Memory
+
+  vc_TestSinglePortRandDelayMem
+  #(
+    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
+    .p_addr_sz   (32),    // high order bits will get truncated in memory
+    .p_data_sz   (32),
+    .p_max_delay (4)
+  )
+  imem
+  (
+    .clk                (clk),
+    .reset              (reset_mem),
+
+    // Instruction request interface
+
+    .memreq_val        (imemreq_val),
+    .memreq_rdy        (imemreq_rdy),
+    .memreq_msg        (imemreq_msg),
+
+    // Instruction response interface
+
+    .memresp_val       (imemresp_val),
+    .memresp_rdy       (1'b1),
+    .memresp_msg       (imemresp_msg)      
+  );
+
+// Data Memory
+
+vc_TestSinglePortRandDelayMem
+  #(
+    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
+    .p_addr_sz   (32),    // high order bits will get truncated in memory
+    .p_data_sz   (256),
+    .p_max_delay (4)
+  )
+  dmem
+  (
+    .clk                (clk),
+    .reset              (reset_mem),
+
+    // Instruction request interface
+
+    .memreq_val        (dmemreq_val),
+    .memreq_rdy        (dmemreq_rdy),
+    .memreq_msg        (dmemreq_msg),
+
+    // Instruction response interface
+
+    .memresp_val       (dmemresp_val),
+    .memresp_rdy       (1'b1),
+    .memresp_msg       (dmemresp_msg)    
+  );
 
   //----------------------------------------------------------------------
   // Start the simulation
@@ -151,7 +208,8 @@ module riscv_sim;
       end
       $fclose(fh);
 
-      $readmemh( exe_filename, mem.mem.m );
+      $readmemh( exe_filename, imem.mem.m );
+      $readmemh( exe_filename, dmem.mem.m );
 
     end
     else begin
