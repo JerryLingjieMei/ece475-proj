@@ -1,6 +1,6 @@
-WARNING: ../riscvvec/riscvvec-sim.v:210: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
-WARNING: ../riscvvec/riscvvec-sim.v:211: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
-ERROR: ../riscvvec/riscvvec-sim.v:211: $readmemh(../tests/build/vmh/riscv-srl.vmh): address (0x20000) is out of range [0x0:0x7fff]
+WARNING: ../riscvvec/riscvvec-sim.v:394: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: ../riscvvec/riscvvec-sim.v:395: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
+WARNING: ../riscvvec/riscvvec-sim.v:396: $readmemh: The behaviour for reg[...] mem[N:0]; $readmemh("...", mem); changed in the 1364-2005 standard. To avoid ambiguity, use mem[0:N] or explicit range parameters $readmemh("...", mem, start, stop);. Defaulting to 1364-2005 behavior.
 VCD info: dumpfile ../tests/build/vmh/riscv-srl.vcd opened for output.
 *** PASSED ***
 --------------------------------------------

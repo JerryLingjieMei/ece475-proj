@@ -25,6 +25,7 @@ module riscv_CoreDpath
 
   output [31:0] dmemreq_msg_addr,
   output [255:0] dmemreq_msg_data,
+  output   [3:0] dmemreq_vl,
   input    [2:0] dmemreq_msg_len_Xhl,
   input  [255:0] dmemresp_msg_data,
 
@@ -320,6 +321,7 @@ module riscv_CoreDpath
 
   assign dmemreq_msg_addr = alu_out_Xhl;
   assign dmemreq_msg_data = ( dmemreq_msg_len_Xhl == 3'd0 ) ? wvdata_Xhl : { {224{1'b0}}, wdata_Xhl };
+  assign dmemreq_vl       = vl_Xhl;
 
   wire [31:0] execute_mux_out_Xhl = alu_out_Xhl;
   wire [255:0] execute_mux_vout_Xhl = alu_vout_Xhl;

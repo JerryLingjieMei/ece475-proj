@@ -5,7 +5,7 @@
 `include "riscvvec-Core.v"
 //`include "vc-TestDualPortRandDelayMem.v"
 `include "vc-TestSinglePortRandDelayMem.v"
-
+`include "vc-TestQuadPortRandDelayMem.v"
 
 module riscv_sim;
 
@@ -30,11 +30,54 @@ module riscv_sim;
   wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] imemresp_msg;
   wire                                 imemresp_val;
 
-  wire [`VC_MEM_REQ_MSG_SZ(32,256)-1:0] dmemreq_msg;
+  /*
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq_msg;
   wire                                 dmemreq_val;
   wire                                 dmemreq_rdy;
-  wire   [`VC_MEM_RESP_MSG_SZ(256)-1:0] dmemresp_msg;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp_msg;
   wire                                 dmemresp_val;
+  */
+
+   wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq0_msg;
+  wire                                 dmemreq_val;
+  wire                                 dmemreq0_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp0_msg;
+  wire                                 dmemresp0_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq1_msg;
+  wire                                 dmemreq1_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp1_msg;
+  wire                                 dmemresp1_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq2_msg;
+  wire                                 dmemreq2_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp2_msg;
+  wire                                 dmemresp2_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq3_msg;
+  wire                                 dmemreq3_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp3_msg;
+  wire                                 dmemresp3_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq4_msg;
+  wire                                 dmemreq4_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp4_msg;
+  wire                                 dmemresp4_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq5_msg;
+  wire                                 dmemreq5_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp5_msg;
+  wire                                 dmemresp5_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq6_msg;
+  wire                                 dmemreq6_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp6_msg;
+  wire                                 dmemresp6_val;
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq7_msg;
+  wire                                 dmemreq7_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp7_msg;
+  wire                                 dmemresp7_val;
 
   //----------------------------------------------------------------------
   // Reset signals for processor and memory
@@ -70,14 +113,56 @@ module riscv_sim;
 
     // Data request interface
 
-    .dmemreq_msg       (dmemreq_msg),
+    .dmemreq0_msg       (dmemreq0_msg),
     .dmemreq_val       (dmemreq_val),
-    .dmemreq_rdy       (dmemreq_rdy),
+    .dmemreq0_rdy       (dmemreq0_rdy),
+
+    .dmemreq1_msg       (dmemreq1_msg),
+    .dmemreq1_rdy       (dmemreq1_rdy),
+
+    .dmemreq2_msg       (dmemreq2_msg),
+    .dmemreq2_rdy       (dmemreq2_rdy),
+
+    .dmemreq3_msg       (dmemreq3_msg),
+    .dmemreq3_rdy       (dmemreq3_rdy),
+
+    .dmemreq4_msg       (dmemreq4_msg),
+    .dmemreq4_rdy       (dmemreq4_rdy),
+
+    .dmemreq5_msg       (dmemreq5_msg),
+    .dmemreq5_rdy       (dmemreq5_rdy),
+
+    .dmemreq6_msg       (dmemreq6_msg),
+    .dmemreq6_rdy       (dmemreq6_rdy),
+
+    .dmemreq7_msg       (dmemreq7_msg),
+    .dmemreq7_rdy       (dmemreq7_rdy),
 
     // Data response interface
 
-    .dmemresp_msg      (dmemresp_msg),
-    .dmemresp_val      (dmemresp_val),
+    .dmemresp0_msg      (dmemresp0_msg),
+    .dmemresp0_val      (dmemresp0_val),
+
+    .dmemresp1_msg      (dmemresp1_msg),
+    .dmemresp1_val      (dmemresp1_val),
+
+    .dmemresp2_msg      (dmemresp2_msg),
+    .dmemresp2_val      (dmemresp2_val),
+
+    .dmemresp3_msg      (dmemresp3_msg),
+    .dmemresp3_val      (dmemresp3_val),
+
+    .dmemresp4_msg      (dmemresp4_msg),
+    .dmemresp4_val      (dmemresp4_val),
+
+    .dmemresp5_msg      (dmemresp5_msg),
+    .dmemresp5_val      (dmemresp5_val),
+
+    .dmemresp6_msg      (dmemresp6_msg),
+    .dmemresp6_val      (dmemresp6_val),
+
+    .dmemresp7_msg      (dmemresp7_msg),
+    .dmemresp7_val      (dmemresp7_val),
 
     // CSR status register output to host
 
@@ -153,13 +238,14 @@ module riscv_sim;
     .memresp_msg       (imemresp_msg)      
   );
 
+/*
 // Data Memory
 
 vc_TestSinglePortRandDelayMem
   #(
     .p_mem_sz    (1<<20), // max 20-bit address to index into memory
     .p_addr_sz   (32),    // high order bits will get truncated in memory
-    .p_data_sz   (256),
+    .p_data_sz   (32),
     .p_max_delay (4)
   )
   dmem
@@ -178,6 +264,101 @@ vc_TestSinglePortRandDelayMem
     .memresp_val       (dmemresp_val),
     .memresp_rdy       (1'b1),
     .memresp_msg       (dmemresp_msg)    
+  );
+  */
+
+  // Data Memory 1
+
+  vc_TestQuadPortRandDelayMem
+  #(
+    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
+    .p_addr_sz   (32),    // high order bits will get truncated in memory
+    .p_data_sz   (32),
+    .p_max_delay (0)
+   )
+   dmem1
+  (
+    .clk         (clk),
+    .reset       (reset),
+
+    .memreq0_val  (dmemreq_val),
+    .memreq0_rdy  (dmemreq0_rdy),
+    .memreq0_msg  (dmemreq0_msg),
+
+    .memresp0_val (dmemresp0_val),
+    .memresp0_rdy (1'b1),
+    .memresp0_msg (dmemresp0_msg),
+
+    .memreq1_val  (dmemreq_val),
+    .memreq1_rdy  (dmemreq1_rdy),
+    .memreq1_msg  (dmemreq1_msg),
+
+    .memresp1_val (dmemresp1_val),
+    .memresp1_rdy (1'b1),
+    .memresp1_msg (dmemresp1_msg),
+
+    .memreq2_val  (dmemreq_val),
+    .memreq2_rdy  (dmemreq2_rdy),
+    .memreq2_msg  (dmemreq2_msg),
+
+    .memresp2_val (dmemresp2_val),
+    .memresp2_rdy (1'b1),
+    .memresp2_msg (dmemresp2_msg),
+
+    .memreq3_val  (dmemreq_val),
+    .memreq3_rdy  (dmemreq3_rdy),
+    .memreq3_msg  (dmemreq3_msg),
+
+    .memresp3_val (dmemresp3_val),
+    .memresp3_rdy (1'b1),
+    .memresp3_msg (dmemresp3_msg)
+  );
+
+  // Data Memory 2
+
+  vc_TestQuadPortRandDelayMem
+  #(
+    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
+    .p_addr_sz   (32),    // high order bits will get truncated in memory
+    .p_data_sz   (32),
+    .p_max_delay (0)
+   )
+   dmem2
+  (
+    .clk         (clk),
+    .reset       (reset),
+
+    .memreq0_val  (dmemreq_val),
+    .memreq0_rdy  (dmemreq4_rdy),
+    .memreq0_msg  (dmemreq4_msg),
+
+    .memresp0_val (dmemresp4_val),
+    .memresp0_rdy (1'b1),
+    .memresp0_msg (dmemresp4_msg),
+
+    .memreq1_val  (dmemreq_val),
+    .memreq1_rdy  (dmemreq5_rdy),
+    .memreq1_msg  (dmemreq5_msg),
+
+    .memresp1_val (dmemresp5_val),
+    .memresp1_rdy (1'b1),
+    .memresp1_msg (dmemresp5_msg),
+
+    .memreq2_val  (dmemreq_val),
+    .memreq2_rdy  (dmemreq6_rdy),
+    .memreq2_msg  (dmemreq6_msg),
+
+    .memresp2_val (dmemresp6_val),
+    .memresp2_rdy (1'b1),
+    .memresp2_msg (dmemresp6_msg),
+
+    .memreq3_val  (dmemreq_val),
+    .memreq3_rdy  (dmemreq7_rdy),
+    .memreq3_msg  (dmemreq7_msg),
+
+    .memresp3_val (dmemresp7_val),
+    .memresp3_rdy (1'b1),
+    .memresp3_msg (dmemresp7_msg)
   );
 
   //----------------------------------------------------------------------
@@ -209,7 +390,8 @@ vc_TestSinglePortRandDelayMem
       $fclose(fh);
 
       $readmemh( exe_filename, imem.mem.m );
-      $readmemh( exe_filename, dmem.mem.m );
+      $readmemh( exe_filename, dmem1.mem.m );
+      $readmemh( exe_filename, dmem2.mem.m );
 
     end
     else begin

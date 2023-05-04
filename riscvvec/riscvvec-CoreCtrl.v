@@ -298,10 +298,10 @@ module riscv_CoreCtrl
   // Subword Memop Length
 
   localparam ml_x  = 3'bx;
-  localparam ml_v  = 3'd0;
+  localparam ml_w  = 3'd0;
   localparam ml_b  = 3'd1;
   localparam ml_h  = 3'd2;
-  localparam ml_w  = 3'd4;
+  localparam ml_v  = 3'd4;
 
   // Memory Response Mux Select
 

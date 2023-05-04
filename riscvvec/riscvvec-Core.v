@@ -26,16 +26,86 @@ module riscv_Core
   input [`VC_MEM_RESP_MSG_SZ(32)-1:0] imemresp_msg,
   input                               imemresp_val,
 
-  // Data Memory Request Port
+  // Data Memory Request Port 1
 
-  output [`VC_MEM_REQ_MSG_SZ(32,256)-1:0] dmemreq_msg,
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq0_msg,
   output                                 dmemreq_val,
-  input                                  dmemreq_rdy,
+  input                                  dmemreq0_rdy,
 
-  // Data Memory Response Port
+  // Data Memory Response Port 1
 
-  input [`VC_MEM_RESP_MSG_SZ(256)-1:0] dmemresp_msg,
-  input                               dmemresp_val,
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp0_msg,
+  input                               dmemresp0_val,
+
+  // Data Memory Request Port 2
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq1_msg,
+  input                                  dmemreq1_rdy,
+
+  // Data Memory Response Port 2
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp1_msg,
+  input                               dmemresp1_val,
+
+  // Data Memory Request Port 3
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq2_msg,
+  input                                  dmemreq2_rdy,
+
+  // Data Memory Response Port 3
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp2_msg,
+  input                               dmemresp2_val,
+
+  // Data Memory Request Port 4
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq3_msg,
+  input                                  dmemreq3_rdy,
+
+  // Data Memory Response Port 4
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp3_msg,
+  input                               dmemresp3_val,
+
+  // Data Memory Request Port 5
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq4_msg,
+  input                                  dmemreq4_rdy,
+
+  // Data Memory Response Port 5
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp4_msg,
+  input                               dmemresp4_val,
+
+  // Data Memory Request Port 6
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq5_msg,
+  input                                  dmemreq5_rdy,
+
+  // Data Memory Response Port 6
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp5_msg,
+  input                               dmemresp5_val,
+
+  // Data Memory Request Port 7
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq6_msg,
+  input                                  dmemreq6_rdy,
+
+  // Data Memory Response Port 7
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp6_msg,
+  input                               dmemresp6_val,
+
+  // Data Memory Request Port 8
+
+  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq7_msg,
+  input                                  dmemreq7_rdy,
+
+  // Data Memory Response Port 8
+
+  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp7_msg,
+  input                               dmemresp7_val,
 
   // CSR Status Register Output to Host
 
@@ -48,6 +118,7 @@ module riscv_Core
   wire        dmemreq_msg_rw;
   wire  [2:0] dmemreq_msg_len;
   wire [31:0] dmemreq_msg_addr;
+  wire  [3:0] dmemreq_vl;
   wire [255:0] dmemreq_msg_data;
   wire [255:0] dmemresp_msg_data;
 
@@ -108,13 +179,80 @@ module riscv_Core
     .bits (imemreq_msg)
   );
 
-  vc_MemReqMsgToBits#(32,256) dmemreq_msg_to_bits
+  /*
+  vc_MemReqMsgToBits#(32,32) dmemreq_msg_to_bits
   (
     .type (dmemreq_msg_rw),
     .addr (dmemreq_msg_addr),
-    .len  ({{2{1'b0}},dmemreq_msg_len}),
+    .len  (dmemreq_msg_len),
     .data (dmemreq_msg_data),
     .bits (dmemreq_msg)
+  );
+  */
+
+  vc_MemReqMsgToBits#(32,32) dmemreq0_msg_to_bits
+  (
+    .type (dmemreq_msg_rw),
+    .addr (dmemreq_msg_addr),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[31:0]),
+    .bits (dmemreq0_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq1_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd2) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000001 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[63:32]),
+    .bits (dmemreq1_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq2_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd3) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000002 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[95:64]),
+    .bits (dmemreq2_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq3_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd4) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000003 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[127:96]),
+    .bits (dmemreq3_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq4_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd5) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000004 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[159:128]),
+    .bits (dmemreq4_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq5_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd6) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000005 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[191:160]),
+    .bits (dmemreq5_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq6_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd7) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000006 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[223:192]),
+    .bits (dmemreq6_msg)
+  );
+  vc_MemReqMsgToBits#(32,32) dmemreq7_msg_to_bits
+  (
+    .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd8) && dmemreq_msg_len[2] )),
+    .addr (( dmemreq_msg_addr + 32'h00000007 )),
+    .len  (dmemreq_msg_len[1:0]),
+    .data (dmemreq_msg_data[255:224]),
+    .bits (dmemreq7_msg)
   );
 
   //----------------------------------------------------------------------
@@ -129,17 +267,89 @@ module riscv_Core
     .data (imemresp_msg_data)
   );
 
-  vc_MemRespMsgFromBits#(256) dmemresp_msg_from_bits
+  /*
+  vc_MemRespMsgFromBits#(32) dmemresp_msg_from_bits
   (
     .bits (dmemresp_msg),
     .type (),
     .len  (),
     .data (dmemresp_msg_data)
   );
+  */
+
+  vc_MemRespMsgFromBits#(32) dmemresp0_msg_from_bits
+  (
+    .bits (dmemresp0_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[31:0])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp1_msg_from_bits
+  (
+    .bits (dmemresp1_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[63:32])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp2_msg_from_bits
+  (
+    .bits (dmemresp2_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[95:64])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp3_msg_from_bits
+  (
+    .bits (dmemresp3_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[127:96])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp4_msg_from_bits
+  (
+    .bits (dmemresp4_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[159:128])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp5_msg_from_bits
+  (
+    .bits (dmemresp5_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[191:160])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp6_msg_from_bits
+  (
+    .bits (dmemresp6_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[223:192])
+  );
+
+  vc_MemRespMsgFromBits#(32) dmemresp7_msg_from_bits
+  (
+    .bits (dmemresp7_msg),
+    .type (),
+    .len  (),
+    .data (dmemresp_msg_data[255:224])
+  );
 
   //----------------------------------------------------------------------
   // Control Unit
   //----------------------------------------------------------------------
+
+  wire dmemresp_val = dmemresp0_val && dmemresp1_val && dmemresp2_val && dmemresp3_val &&
+                      dmemresp4_val && dmemresp5_val && dmemresp6_val && dmemresp7_val;
+
+  wire dmemreq_rdy = dmemreq0_rdy && dmemreq1_rdy && dmemreq2_rdy && dmemreq3_rdy &&
+                     dmemreq4_rdy && dmemreq5_rdy && dmemreq6_rdy && dmemreq7_rdy;
 
   riscv_CoreCtrl ctrl
   (
@@ -232,6 +442,7 @@ module riscv_Core
     .dmemreq_msg_addr        (dmemreq_msg_addr),
     .dmemreq_msg_data        (dmemreq_msg_data),
     .dmemreq_msg_len_Xhl     (dmemreq_msg_len),
+    .dmemreq_vl              (dmemreq_vl),
     .dmemresp_msg_data       (dmemresp_msg_data),
 
     // Controls Signals (ctrl->dpath)
