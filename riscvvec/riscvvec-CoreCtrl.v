@@ -559,12 +559,14 @@ module riscv_CoreCtrl
                          || ( rs2_en_Dhl && !rs2_ven_Dhl && inst_val_Xhl && is_ld_Xhl
                               && ( rs2_addr_Dhl == rf_waddr_Xhl )
                               && ( rf_waddr_Xhl != 5'd0 ) && !rf_vwen_Xhl)
+
                          || ( rs1_en_Dhl && rs1_ven_Dhl && inst_val_Xhl && is_ld_Xhl
                               && ( rs1_addr_Dhl == rf_waddr_Xhl )
                               && rf_vwen_Xhl)
                          || ( rs2_en_Dhl && rs2_ven_Dhl && inst_val_Xhl && is_ld_Xhl
                               && ( rs2_addr_Dhl == rf_waddr_Xhl )
                               && rf_vwen_Xhl)
+
 												 || ( rs1_en_Dhl && !rs1_ven_Dhl && inst_val_Xhl && execute_mux_sel_Xhl
                               && ( rs1_addr_Dhl == rf_waddr_Xhl )
                               && ( rf_waddr_Xhl != 5'd0 ) && !rf_vwen_Xhl)
@@ -583,6 +585,25 @@ module riscv_CoreCtrl
 												 || ( rs2_en_Dhl && !rs2_ven_Dhl && inst_val_X2hl && execute_mux_sel_X2hl
                               && ( rs2_addr_Dhl == rf_waddr_X2hl )
                               && ( rf_waddr_X2hl != 5'd0 ) && !rf_vwen_X2hl)
+
+												 || ( rs1_en_Dhl && rs1_ven_Dhl && inst_val_Xhl && execute_mux_sel_Xhl
+                              && ( rs1_addr_Dhl == rf_waddr_Xhl )
+                              && ( rf_waddr_Xhl != 5'd0 ) && rf_vwen_Xhl)
+												 || ( rs1_en_Dhl && rs1_ven_Dhl && inst_val_Mhl && execute_mux_sel_Mhl
+                              && ( rs1_addr_Dhl == rf_waddr_Mhl )
+                              && ( rf_waddr_Mhl != 5'd0 ) && rf_vwen_Mhl)
+												 || ( rs1_en_Dhl && rs1_ven_Dhl && inst_val_X2hl && execute_mux_sel_X2hl
+                              && ( rs1_addr_Dhl == rf_waddr_X2hl )
+                              && ( rf_waddr_X2hl != 5'd0 ) && rf_vwen_X2hl)
+												 || ( rs2_en_Dhl && rs2_ven_Dhl && inst_val_Xhl && execute_mux_sel_Xhl
+                              && ( rs2_addr_Dhl == rf_waddr_Xhl )
+                              && ( rf_waddr_Xhl != 5'd0 ) && rf_vwen_Xhl)
+												 || ( rs2_en_Dhl && rs2_ven_Dhl && inst_val_Mhl && execute_mux_sel_Mhl
+                              && ( rs2_addr_Dhl == rf_waddr_Mhl )
+                              && ( rf_waddr_Mhl != 5'd0 ) && rf_vwen_Mhl)
+												 || ( rs2_en_Dhl && rs2_ven_Dhl && inst_val_X2hl && execute_mux_sel_X2hl
+                              && ( rs2_addr_Dhl == rf_waddr_X2hl )
+                              && ( rf_waddr_X2hl != 5'd0 ) && rf_vwen_X2hl)
 												 );
 
 	// Bypassing logic from X, M, X2, X3, W to D

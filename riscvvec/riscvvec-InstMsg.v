@@ -448,7 +448,7 @@ module riscv_InstMsgDisasm
 
         `RISCV_INST_MSG_ADDVX   : $sformat( dasm, "addvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
         `RISCV_INST_MSG_ADDVV   : $sformat( dasm, "addvv  v%02d, v%02d, v%02d     ", rd,  rs1, rs2    );
-        `RISCV_INST_MSG_ANDVX   : $sformat( dasm, "addvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
+        `RISCV_INST_MSG_ANDVX   : $sformat( dasm, "andvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
         `RISCV_INST_MSG_REDSUM  : $sformat( dasm, "redsum v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
         `RISCV_INST_MSG_SEQVX   : $sformat( dasm, "seqvx  v%02d, v%02d, r%02d     ", rd,  rs1, rs2    );
         `RISCV_INST_MSG_SEQVV   : $sformat( dasm, "seqvv  v%02d, v%02d, v%02d     ", rd,  rs1, rs2    );

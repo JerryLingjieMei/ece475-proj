@@ -34,7 +34,7 @@ module riscv_CoreDpathVectorRegfile
     if ( wen_p && (waddr_p != 5'b0) )
       registers[waddr_p] <= wdata_p;
     if (wvlen_p)
-      vl  <=  wvl_p[3:0];
+      vl  <=  (wvl_p>=8)? 4'd8 : wvl_p[3:0];
   end
 
 endmodule
