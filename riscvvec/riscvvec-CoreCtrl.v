@@ -41,6 +41,7 @@ module riscv_CoreCtrl
   output        muldivresp_rdy,
   output        muldiv_mux_sel_X3hl,
   output        execute_mux_sel_X3hl,
+  output  [2:0] dmemreq_len_Dhl,
   output  [2:0] dmemresp_mux_sel_Mhl,
   output        dmemresp_queue_en_Mhl,
   output        dmemresp_queue_val_Mhl,
@@ -720,6 +721,7 @@ module riscv_CoreCtrl
   // Only send a valid dmem request if not stalled
 
   assign dmemreq_msg_rw  = dmemreq_msg_rw_Xhl;
+  assign dmemreq_len_Dhl = dmemreq_msg_len_Dhl;
   assign dmemreq_msg_len = dmemreq_msg_len_Xhl;
   assign dmemreq_val     = ( inst_val_Xhl && !stall_Xhl && dmemreq_val_Xhl );
 

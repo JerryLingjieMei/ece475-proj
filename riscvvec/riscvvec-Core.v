@@ -120,7 +120,25 @@ module riscv_Core
   wire [31:0] dmemreq_msg_addr;
   wire  [3:0] dmemreq_vl;
   wire [255:0] dmemreq_msg_data;
-  wire [255:0] dmemresp_msg_data;
+  wire [255:0] dmemresp_msg_data = {dmemresp7_msg_data,dmemresp6_msg_data,dmemresp5_msg_data,dmemresp4_msg_data,dmemresp3_msg_data,dmemresp2_msg_data,dmemresp1_msg_data,dmemresp0_msg_data};
+
+  wire [31:0] dmemreq0_msg_data = dmemreq_msg_data[31:0];
+  wire [31:0] dmemreq1_msg_data = dmemreq_msg_data[63:32];
+  wire [31:0] dmemreq2_msg_data = dmemreq_msg_data[127:96];
+  wire [31:0] dmemreq3_msg_data = dmemreq_msg_data[159:128];
+  wire [31:0] dmemreq4_msg_data = dmemreq_msg_data[159:128];
+  wire [31:0] dmemreq5_msg_data = dmemreq_msg_data[191:160];
+  wire [31:0] dmemreq6_msg_data = dmemreq_msg_data[223:192];
+  wire [31:0] dmemreq7_msg_data = dmemreq_msg_data[255:224];
+
+  wire [31:0] dmemresp0_msg_data;  
+  wire [31:0] dmemresp1_msg_data;
+  wire [31:0] dmemresp2_msg_data;
+  wire [31:0] dmemresp3_msg_data;
+  wire [31:0] dmemresp4_msg_data;
+  wire [31:0] dmemresp5_msg_data;
+  wire [31:0] dmemresp6_msg_data;
+  wire [31:0] dmemresp7_msg_data;
 
   wire  [1:0] pc_mux_sel_Phl;
   wire  [1:0] op0_mux_sel_Dhl;
@@ -135,6 +153,7 @@ module riscv_Core
   wire        muldivresp_rdy;
   wire        muldiv_mux_sel_X3hl;
   wire        execute_mux_sel_X3hl;
+  wire  [2:0] dmemreq_msg_len_Dhl;
   wire  [2:0] dmemresp_mux_sel_Mhl;
   wire        dmemresp_queue_en_Mhl;
   wire        dmemresp_queue_val_Mhl;
@@ -195,7 +214,7 @@ module riscv_Core
     .type (dmemreq_msg_rw),
     .addr (dmemreq_msg_addr),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[31:0]),
+    .data (dmemreq0_msg_data),
     .bits (dmemreq0_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq1_msg_to_bits
@@ -203,7 +222,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd2) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000001 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[63:32]),
+    .data (dmemreq1_msg_data),
     .bits (dmemreq1_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq2_msg_to_bits
@@ -211,7 +230,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd3) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000002 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[95:64]),
+    .data (dmemreq2_msg_data),
     .bits (dmemreq2_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq3_msg_to_bits
@@ -219,7 +238,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd4) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000003 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[127:96]),
+    .data (dmemreq3_msg_data),
     .bits (dmemreq3_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq4_msg_to_bits
@@ -227,7 +246,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd5) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000004 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[159:128]),
+    .data (dmemreq4_msg_data),
     .bits (dmemreq4_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq5_msg_to_bits
@@ -235,7 +254,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd6) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000005 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[191:160]),
+    .data (dmemreq5_msg_data),
     .bits (dmemreq5_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq6_msg_to_bits
@@ -243,7 +262,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd7) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000006 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[223:192]),
+    .data (dmemreq6_msg_data),
     .bits (dmemreq6_msg)
   );
   vc_MemReqMsgToBits#(32,32) dmemreq7_msg_to_bits
@@ -251,7 +270,7 @@ module riscv_Core
     .type (( dmemreq_msg_rw && (dmemreq_vl >= 4'd8) && dmemreq_msg_len[2] )),
     .addr (( dmemreq_msg_addr + 32'h00000007 )),
     .len  (dmemreq_msg_len[1:0]),
-    .data (dmemreq_msg_data[255:224]),
+    .data (dmemreq7_msg_data),
     .bits (dmemreq7_msg)
   );
 
@@ -282,7 +301,7 @@ module riscv_Core
     .bits (dmemresp0_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[31:0])
+    .data (dmemresp0_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp1_msg_from_bits
@@ -290,7 +309,7 @@ module riscv_Core
     .bits (dmemresp1_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[63:32])
+    .data (dmemresp1_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp2_msg_from_bits
@@ -298,7 +317,7 @@ module riscv_Core
     .bits (dmemresp2_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[95:64])
+    .data (dmemresp2_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp3_msg_from_bits
@@ -306,7 +325,7 @@ module riscv_Core
     .bits (dmemresp3_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[127:96])
+    .data (dmemresp3_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp4_msg_from_bits
@@ -314,7 +333,7 @@ module riscv_Core
     .bits (dmemresp4_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[159:128])
+    .data (dmemresp4_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp5_msg_from_bits
@@ -322,7 +341,7 @@ module riscv_Core
     .bits (dmemresp5_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[191:160])
+    .data (dmemresp5_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp6_msg_from_bits
@@ -330,7 +349,7 @@ module riscv_Core
     .bits (dmemresp6_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[223:192])
+    .data (dmemresp6_msg_data)
   );
 
   vc_MemRespMsgFromBits#(32) dmemresp7_msg_from_bits
@@ -338,7 +357,7 @@ module riscv_Core
     .bits (dmemresp7_msg),
     .type (),
     .len  (),
-    .data (dmemresp_msg_data[255:224])
+    .data (dmemresp7_msg_data)
   );
 
   //----------------------------------------------------------------------
@@ -386,6 +405,7 @@ module riscv_Core
     .muldivresp_rdy         (muldivresp_rdy),
     .muldiv_mux_sel_X3hl     (muldiv_mux_sel_X3hl),
     .execute_mux_sel_X3hl    (execute_mux_sel_X3hl),
+    .dmemreq_len_Dhl        (dmemreq_msg_len_Dhl),
     .dmemresp_mux_sel_Mhl   (dmemresp_mux_sel_Mhl),
     .dmemresp_queue_en_Mhl  (dmemresp_queue_en_Mhl),
     .dmemresp_queue_val_Mhl (dmemresp_queue_val_Mhl),
@@ -460,6 +480,7 @@ module riscv_Core
     .muldivresp_rdy          (muldivresp_rdy),
     .muldiv_mux_sel_X3hl      (muldiv_mux_sel_X3hl),
     .execute_mux_sel_X3hl     (execute_mux_sel_X3hl),
+    .dmemreq_msg_len_Dhl     (dmemreq_msg_len_Dhl),
     .dmemresp_mux_sel_Mhl    (dmemresp_mux_sel_Mhl),
     .dmemresp_queue_en_Mhl   (dmemresp_queue_en_Mhl),
     .dmemresp_queue_val_Mhl  (dmemresp_queue_val_Mhl),

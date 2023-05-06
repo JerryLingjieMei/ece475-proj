@@ -170,48 +170,6 @@ module riscv_sim;
     .csr_status        (status)
   );
 
-  //----------------------------------------------------------------------
-  // Test Memory
-  //----------------------------------------------------------------------
-  /*
-  vc_TestDualPortRandDelayMem
-  #(
-    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
-    .p_addr_sz   (32),    // high order bits will get truncated in memory
-    .p_data_sz   (32),
-    .p_max_delay (0)
-  )
-  mem
-  (
-    .clk                (clk),
-    .reset              (reset_mem),
-
-    // Instruction request interface
-
-    .memreq0_val        (imemreq_val),
-    .memreq0_rdy        (imemreq_rdy),
-    .memreq0_msg        (imemreq_msg),
-
-    // Instruction response interface
-
-    .memresp0_val       (imemresp_val),
-    .memresp0_rdy       (1'b1),
-    .memresp0_msg       (imemresp_msg),
-
-    // Data request interface
-
-    .memreq1_val        (dmemreq_val),
-    .memreq1_rdy        (dmemreq_rdy),
-    .memreq1_msg        (dmemreq_msg),
-
-    // Data response interface
-
-    .memresp1_val       (dmemresp_val),
-    .memresp1_rdy       (1'b1),
-    .memresp1_msg       (dmemresp_msg)
-   );
-   */
-
   // Instruction Memory
 
   vc_TestSinglePortRandDelayMem
@@ -238,35 +196,6 @@ module riscv_sim;
     .memresp_rdy       (1'b1),
     .memresp_msg       (imemresp_msg)      
   );
-
-  /*
-// Data Memory 
-
-vc_TestSinglePortRandDelayMem
-  #(
-    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
-    .p_addr_sz   (32),    // high order bits will get truncated in memory
-    .p_data_sz   (32),
-    .p_max_delay (0)
-  )
-  dmem
-  (
-    .clk                (clk),
-    .reset              (reset_mem),
-
-    // Instruction request interface
-
-    .memreq_val        (dmemreq_val),
-    .memreq_rdy        (dmemreq_rdy),
-    .memreq_msg        (dmemreq_msg),
-
-    // Instruction response interface
-
-    .memresp_val       (dmemresp_val),
-    .memresp_rdy       (1'b1),
-    .memresp_msg       (dmemresp_msg)    
-  );
-  */
 
   // Data Memory 1
 

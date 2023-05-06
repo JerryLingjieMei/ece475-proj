@@ -44,6 +44,7 @@ module riscv_CoreDpath
   input         muldivresp_rdy,
   input         muldiv_mux_sel_X3hl,
   input         execute_mux_sel_X3hl,
+  input   [2:0] dmemreq_msg_len_Dhl,
   input   [2:0] dmemresp_mux_sel_Mhl,
   input         dmemresp_queue_en_Mhl,
   input         dmemresp_queue_val_Mhl,
@@ -270,6 +271,10 @@ module riscv_CoreDpath
   wire [31:0] wdata_Dhl = rdata1_byp_mux_out_Dhl;
   wire [255:0] wvdata_Dhl = vdata1_byp_mux_out_Dhl;
 
+  // Dmem data
+
+  wire [255:0] dmemreq_data_Dhl = ( dmemreq_msg_len_Dhl == 3'd4) ? wvdata_Dhl : { {224{1'b0}}, wdata_Dhl };
+
   //----------------------------------------------------------------------
   // X <- D
   //----------------------------------------------------------------------
@@ -280,6 +285,7 @@ module riscv_CoreDpath
   reg [31:0] op1_mux_out_Xhl;
   reg [255:0] op0_mux_vout_Xhl;
   reg [255:0] op1_mux_vout_Xhl;
+  reg [255:0] dmemreq_data_Xhl;
   reg [31:0]  wdata_Xhl;
   reg [255:0] wvdata_Xhl;
 
@@ -291,6 +297,7 @@ module riscv_CoreDpath
       op1_mux_out_Xhl <= op1_mux_out_Dhl;
       op0_mux_vout_Xhl <= op0_mux_vout_Dhl;
       op1_mux_vout_Xhl <= op1_mux_vout_Dhl;
+      dmemreq_data_Xhl <= dmemreq_data_Dhl;
       wdata_Xhl       <= wdata_Dhl;
       wvdata_Xhl      <= wvdata_Dhl;
     end
@@ -320,7 +327,7 @@ module riscv_CoreDpath
   // Send out memory request during X, response returns in M
 
   assign dmemreq_msg_addr = alu_out_Xhl;
-  assign dmemreq_msg_data = ( dmemreq_msg_len_Xhl == 3'd0 ) ? wvdata_Xhl : { {224{1'b0}}, wdata_Xhl };
+  assign dmemreq_msg_data = dmemreq_data_Xhl;
   assign dmemreq_vl       = vl_Xhl;
 
   wire [31:0] execute_mux_out_Xhl = alu_out_Xhl;
