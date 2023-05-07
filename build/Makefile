@@ -116,6 +116,7 @@ vec_tests = \
   riscv-xori.vmh \
   riscv-vadd.vmh \
   riscv-vredsum.vmh\
+  riscv-lv.vmh\
 
 riscvlong_rtl_sim = riscvlong-sim
 riscvlong_rtl_rand_sim = riscvlong-randdelay-sim

@@ -390,10 +390,12 @@ module riscv_CoreDpath
   //----------------------------------------------------------------------
 
   reg [31:0] dmemresp_queue_reg_Mhl;
+  reg [255:0] dmemresp_queue_vreg_Mhl;
 
   always @ ( posedge clk ) begin
     if ( dmemresp_queue_en_Mhl ) begin
       dmemresp_queue_reg_Mhl <= dmemresp_mux_out_Mhl;
+      dmemresp_queue_vreg_Mhl <= dmemresp_mux_vout_Mhl;
     end
   end
 
@@ -406,7 +408,10 @@ module riscv_CoreDpath
     : ( dmemresp_queue_val_Mhl )  ? dmemresp_queue_reg_Mhl
     :                               32'bx;
     
-  wire [255:0] dmemresp_queue_mux_vout_Mhl = dmemresp_queue_mux_out_Mhl;
+  wire [255:0] dmemresp_queue_mux_vout_Mhl
+    = ( !dmemresp_queue_val_Mhl ) ? dmemresp_mux_vout_Mhl
+    : ( dmemresp_queue_val_Mhl )  ? dmemresp_queue_vreg_Mhl
+    :                               256'bx; 
 
   //----------------------------------------------------------------------
   // Writeback mux
@@ -539,7 +544,7 @@ module riscv_CoreDpath
     .rdata0  (rf_rdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
     .rdata1  (rf_rdata1_Dhl),
-    .wen_p   (rf_wen_Whl && !rf_vwen_Whl),
+    .wen_p   (rf_wen_Whl),
     .waddr_p (rf_waddr_Whl),
     .wdata_p (wb_mux_out_Whl)
   );
@@ -551,7 +556,7 @@ module riscv_CoreDpath
     .rdata0  (rf_vdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
     .rdata1  (rf_vdata1_Dhl),
-    .wen_p   (rf_vwen_Whl && !rf_wen_Whl),
+    .wen_p   (rf_vwen_Whl),
     .waddr_p (rf_waddr_Whl),
     .wdata_p (wb_mux_vout_Whl),
     .wvlen_p (rf_vlwen_Xhl),

@@ -5,7 +5,8 @@
 `include "riscvvec-Core.v"
 //`include "vc-TestDualPortRandDelayMem.v"
 `include "vc-TestSinglePortRandDelayMem.v"
-`include "vc-TestQuadPortRandDelayMem.v"
+//`include "vc-TestQuadPortRandDelayMem.v"
+`include "vc-TestEightPortRandDelayMem.v"
 
 module riscv_sim;
 
@@ -197,6 +198,85 @@ module riscv_sim;
     .memresp_msg       (imemresp_msg)      
   );
 
+  // Data Memory
+  vc_TestEightPortRandDelayMem
+  #(
+    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
+    .p_addr_sz   (32),    // high order bits will get truncated in memory
+    .p_data_sz   (32),
+    .p_max_delay (0)
+   )
+   dmem
+   (
+    .clk         (clk),
+    .reset       (reset),
+
+    .memreq0_val  (dmemreq_val),
+    .memreq0_rdy  (dmemreq0_rdy),
+    .memreq0_msg  (dmemreq0_msg),
+
+    .memresp0_val (dmemresp0_val),
+    .memresp0_rdy (1'b1),
+    .memresp0_msg (dmemresp0_msg),
+
+    .memreq1_val  (dmemreq_val),
+    .memreq1_rdy  (dmemreq1_rdy),
+    .memreq1_msg  (dmemreq1_msg),
+
+    .memresp1_val (dmemresp1_val),
+    .memresp1_rdy (1'b1),
+    .memresp1_msg (dmemresp1_msg),
+
+    .memreq2_val  (dmemreq_val),
+    .memreq2_rdy  (dmemreq2_rdy),
+    .memreq2_msg  (dmemreq2_msg),
+
+    .memresp2_val (dmemresp2_val),
+    .memresp2_rdy (1'b1),
+    .memresp2_msg (dmemresp2_msg),
+
+    .memreq3_val  (dmemreq_val),
+    .memreq3_rdy  (dmemreq3_rdy),
+    .memreq3_msg  (dmemreq3_msg),
+
+    .memresp3_val (dmemresp3_val),
+    .memresp3_rdy (1'b1),
+    .memresp3_msg (dmemresp3_msg),
+
+    .memreq4_val  (dmemreq_val),
+    .memreq4_rdy  (dmemreq4_rdy),
+    .memreq4_msg  (dmemreq4_msg),
+
+    .memresp4_val (dmemresp4_val),
+    .memresp4_rdy (1'b1),
+    .memresp4_msg (dmemresp4_msg),
+
+    .memreq5_val  (dmemreq_val),
+    .memreq5_rdy  (dmemreq5_rdy),
+    .memreq5_msg  (dmemreq5_msg),
+
+    .memresp5_val (dmemresp5_val),
+    .memresp5_rdy (1'b1),
+    .memresp5_msg (dmemresp5_msg),
+
+    .memreq6_val  (dmemreq_val),
+    .memreq6_rdy  (dmemreq6_rdy),
+    .memreq6_msg  (dmemreq6_msg),
+
+    .memresp6_val (dmemresp6_val),
+    .memresp6_rdy (1'b1),
+    .memresp6_msg (dmemresp6_msg),
+
+    .memreq7_val  (dmemreq_val),
+    .memreq7_rdy  (dmemreq7_rdy),
+    .memreq7_msg  (dmemreq7_msg),
+
+    .memresp7_val (dmemresp7_val),
+    .memresp7_rdy (1'b1),
+    .memresp7_msg (dmemresp7_msg)
+   );
+
+  /*
   // Data Memory 1
 
   vc_TestQuadPortRandDelayMem
@@ -290,6 +370,7 @@ module riscv_sim;
     .memresp3_rdy (1'b1),
     .memresp3_msg (dmemresp7_msg)
   );
+  */
 
 
   //----------------------------------------------------------------------
@@ -321,8 +402,7 @@ module riscv_sim;
       $fclose(fh);
 
       $readmemh( exe_filename, imem.mem.m );
-      $readmemh( exe_filename, dmem1.mem.m );
-      $readmemh( exe_filename, dmem2.mem.m );
+      $readmemh( exe_filename, dmem.mem.m );
 
     end
     else begin
