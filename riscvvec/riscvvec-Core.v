@@ -114,7 +114,7 @@ module riscv_Core
 
   wire [31:0] imemreq_msg_addr;
   wire [31:0] imemresp_msg_data;
-
+  
   wire        dmemreq_msg_rw;
   wire  [2:0] dmemreq_msg_len;
   wire [31:0] dmemreq_msg_addr;
@@ -124,8 +124,8 @@ module riscv_Core
 
   wire [31:0] dmemreq0_msg_data = dmemreq_msg_data[31:0];
   wire [31:0] dmemreq1_msg_data = dmemreq_msg_data[63:32];
-  wire [31:0] dmemreq2_msg_data = dmemreq_msg_data[127:96];
-  wire [31:0] dmemreq3_msg_data = dmemreq_msg_data[159:128];
+  wire [31:0] dmemreq2_msg_data = dmemreq_msg_data[95:64];
+  wire [31:0] dmemreq3_msg_data = dmemreq_msg_data[127:96];
   wire [31:0] dmemreq4_msg_data = dmemreq_msg_data[159:128];
   wire [31:0] dmemreq5_msg_data = dmemreq_msg_data[191:160];
   wire [31:0] dmemreq6_msg_data = dmemreq_msg_data[223:192];

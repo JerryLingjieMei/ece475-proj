@@ -38,5 +38,6 @@ riscv_srcs += \
   riscv-vadd.S \
   riscv-vredsum.S \
   riscv-lv.S\
+  riscv-sv.S\
   #riscv-bug.S \
   #riscv-byp.S \

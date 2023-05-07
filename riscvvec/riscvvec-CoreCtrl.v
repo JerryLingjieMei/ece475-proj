@@ -446,7 +446,7 @@ module riscv_CoreCtrl
         `RISCV_INST_MSG_ADDVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  y,  alu_add,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_ANDVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_and,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_SV      :cs={n,   n,  n,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_rdat,   y,  alu_add,     md_x,    n, mdm_x, em_alu,  st,  ml_v, dmm_v,  wm_mem, n,  rx, n   };
+        `RISCV_INST_MSG_SV      :cs={n,   n,  n,   y,   y,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_s,  y,  alu_add,     md_x,    n, mdm_x, em_alu,  st,  ml_v, dmm_v,  wm_mem, n,  rx, n   };
         `RISCV_INST_MSG_SLTVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_lt,      md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_SEQVI   :cs={n,   n,  y,   y,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_eq,      md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_LUIVI   :cs={n,   n,  y,   n,   n,   y,  n,  br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,     md_x,    n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
@@ -591,19 +591,19 @@ module riscv_CoreCtrl
 	// Bypassing logic from X, M, X2, X3, W to D
 	
 	wire[2:0] rdata0_byp_mux_sel_Dhl
-		= ( rs1_en_Dhl && !rs1_ven_Dhl && rf_wen_Xhl && !rf_vwen_Xhl && (rs1_addr_Dhl == rf_waddr_Xhl) && (rf_waddr_Xhl != 5'd0) && inst_val_Xhl ) ? 3'd1
-	  : ( rs1_en_Dhl && !rs1_ven_Dhl && rf_wen_Mhl && !rf_vwen_Mhl && (rs1_addr_Dhl == rf_waddr_Mhl) && (rf_waddr_Mhl != 5'd0) && inst_val_Mhl ) ? 3'd2
-	  : ( rs1_en_Dhl && !rs1_ven_Dhl && rf_wen_X2hl && !rf_vwen_X2hl && (rs1_addr_Dhl == rf_waddr_X2hl) && (rf_waddr_X2hl != 5'd0) && inst_val_X2hl ) ? 3'd3
-	  : ( rs1_en_Dhl && !rs1_ven_Dhl && rf_wen_X3hl && !rf_vwen_X3hl && (rs1_addr_Dhl == rf_waddr_X3hl) && (rf_waddr_X3hl != 5'd0) && inst_val_X3hl ) ? 3'd4
-	  : ( rs1_en_Dhl && !rs1_ven_Dhl && rf_wen_Whl && !rf_vwen_Whl && (rs1_addr_Dhl == rf_waddr_Whl) && (rf_waddr_Whl != 5'd0) && inst_val_Whl ) ? 3'd5
+		= ( rs1_en_Dhl && rf_wen_Xhl && (rs1_addr_Dhl == rf_waddr_Xhl) && (rf_waddr_Xhl != 5'd0) && inst_val_Xhl ) ? 3'd1
+	  : ( rs1_en_Dhl && rf_wen_Mhl && (rs1_addr_Dhl == rf_waddr_Mhl) && (rf_waddr_Mhl != 5'd0) && inst_val_Mhl ) ? 3'd2
+	  : ( rs1_en_Dhl && rf_wen_X2hl && (rs1_addr_Dhl == rf_waddr_X2hl) && (rf_waddr_X2hl != 5'd0) && inst_val_X2hl ) ? 3'd3
+	  : ( rs1_en_Dhl && rf_wen_X3hl && (rs1_addr_Dhl == rf_waddr_X3hl) && (rf_waddr_X3hl != 5'd0) && inst_val_X3hl ) ? 3'd4
+	  : ( rs1_en_Dhl && rf_wen_Whl && (rs1_addr_Dhl == rf_waddr_Whl) && (rf_waddr_Whl != 5'd0) && inst_val_Whl ) ? 3'd5
 	  :  3'd0;	
 
   wire[2:0] rdata1_byp_mux_sel_Dhl
-		= ( rs2_en_Dhl && !rs2_ven_Dhl && rf_wen_Xhl && !rf_vwen_Xhl && (rs2_addr_Dhl == rf_waddr_Xhl) && (rf_waddr_Xhl != 5'd0) && inst_val_Xhl ) ? 3'd1
-	  : ( rs2_en_Dhl && !rs2_ven_Dhl && rf_wen_Mhl && !rf_vwen_Mhl && (rs2_addr_Dhl == rf_waddr_Mhl) && (rf_waddr_Mhl != 5'd0) && inst_val_Mhl ) ? 3'd2
-	  : ( rs2_en_Dhl && !rs2_ven_Dhl && rf_wen_X2hl && !rf_vwen_X2hl && (rs2_addr_Dhl == rf_waddr_X2hl) && (rf_waddr_X2hl != 5'd0) && inst_val_X2hl ) ? 3'd3
-	  : ( rs2_en_Dhl && !rs2_ven_Dhl && rf_wen_X3hl && !rf_vwen_X3hl && (rs2_addr_Dhl == rf_waddr_X3hl) && (rf_waddr_X3hl != 5'd0) && inst_val_X3hl ) ? 3'd4
-	  : ( rs2_en_Dhl && !rs2_ven_Dhl && rf_wen_Whl && !rf_vwen_Whl && (rs2_addr_Dhl == rf_waddr_Whl) && (rf_waddr_Whl != 5'd0) && inst_val_Whl ) ? 3'd5
+		= ( rs2_en_Dhl&& rf_wen_Xhl && !rf_vwen_Xhl && (rs2_addr_Dhl == rf_waddr_Xhl) && (rf_waddr_Xhl != 5'd0) && inst_val_Xhl ) ? 3'd1
+	  : ( rs2_en_Dhl && rf_wen_Mhl && !rf_vwen_Mhl && (rs2_addr_Dhl == rf_waddr_Mhl) && (rf_waddr_Mhl != 5'd0) && inst_val_Mhl ) ? 3'd2
+	  : ( rs2_en_Dhl && rf_wen_X2hl && !rf_vwen_X2hl && (rs2_addr_Dhl == rf_waddr_X2hl) && (rf_waddr_X2hl != 5'd0) && inst_val_X2hl ) ? 3'd3
+	  : ( rs2_en_Dhl && rf_wen_X3hl && !rf_vwen_X3hl && (rs2_addr_Dhl == rf_waddr_X3hl) && (rf_waddr_X3hl != 5'd0) && inst_val_X3hl ) ? 3'd4
+	  : ( rs2_en_Dhl && rf_wen_Whl && !rf_vwen_Whl && (rs2_addr_Dhl == rf_waddr_Whl) && (rf_waddr_Whl != 5'd0) && inst_val_Whl ) ? 3'd5
 	  :  3'd0;	
 
 	wire[2:0] vdata0_byp_mux_sel_Dhl
