@@ -607,19 +607,19 @@ module riscv_CoreCtrl
 	  :  3'd0;	
 
 	wire[2:0] vdata0_byp_mux_sel_Dhl
-		= ( rs1_en_Dhl && rs1_ven_Dhl && rf_wen_Xhl && rf_vwen_Xhl && (rs1_addr_Dhl == rf_waddr_Xhl) && inst_val_Xhl ) ? 3'd1
-	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_wen_Mhl && rf_vwen_Mhl && (rs1_addr_Dhl == rf_waddr_Mhl) && inst_val_Mhl ) ? 3'd2
-	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_wen_X2hl && rf_vwen_X2hl && (rs1_addr_Dhl == rf_waddr_X2hl) && inst_val_X2hl ) ? 3'd3
-	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_wen_X3hl && rf_vwen_X3hl && (rs1_addr_Dhl == rf_waddr_X3hl) && inst_val_X3hl ) ? 3'd4
-	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_wen_Whl && rf_vwen_Whl && (rs1_addr_Dhl == rf_waddr_Whl) && inst_val_Whl ) ? 3'd5
+		= ( rs1_en_Dhl && rs1_ven_Dhl && rf_vwen_Xhl && (rs1_addr_Dhl == rf_waddr_Xhl) && inst_val_Xhl ) ? 3'd1
+	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_vwen_Mhl && (rs1_addr_Dhl == rf_waddr_Mhl) && inst_val_Mhl ) ? 3'd2
+	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_vwen_X2hl && (rs1_addr_Dhl == rf_waddr_X2hl) && inst_val_X2hl ) ? 3'd3
+	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_vwen_X3hl && (rs1_addr_Dhl == rf_waddr_X3hl) && inst_val_X3hl ) ? 3'd4
+	  : ( rs1_en_Dhl && rs1_ven_Dhl && rf_vwen_Whl && (rs1_addr_Dhl == rf_waddr_Whl) && inst_val_Whl ) ? 3'd5
 	  :  3'd0;
 
   wire[2:0] vdata1_byp_mux_sel_Dhl
-		= ( rs2_en_Dhl && rs2_ven_Dhl && rf_wen_Xhl && rf_vwen_Xhl && (rs2_addr_Dhl == rf_waddr_Xhl) && inst_val_Xhl ) ? 3'd1
-	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_wen_Mhl && rf_vwen_Mhl && (rs2_addr_Dhl == rf_waddr_Mhl) && inst_val_Mhl ) ? 3'd2
-	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_wen_X2hl && rf_vwen_X2hl && (rs2_addr_Dhl == rf_waddr_X2hl) && inst_val_X2hl ) ? 3'd3
-	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_wen_X3hl && rf_vwen_X3hl && (rs2_addr_Dhl == rf_waddr_X3hl) && inst_val_X3hl ) ? 3'd4
-	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_wen_Whl && rf_vwen_Whl && (rs2_addr_Dhl == rf_waddr_Whl) && inst_val_Whl ) ? 3'd5
+		= ( rs2_en_Dhl && rs2_ven_Dhl && rf_vwen_Xhl && (rs2_addr_Dhl == rf_waddr_Xhl) && inst_val_Xhl ) ? 3'd1
+	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_vwen_Mhl && (rs2_addr_Dhl == rf_waddr_Mhl) && inst_val_Mhl ) ? 3'd2
+	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_vwen_X2hl && (rs2_addr_Dhl == rf_waddr_X2hl) && inst_val_X2hl ) ? 3'd3
+	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_vwen_X3hl && (rs2_addr_Dhl == rf_waddr_X3hl) && inst_val_X3hl ) ? 3'd4
+	  : ( rs2_en_Dhl && rs2_ven_Dhl && rf_vwen_Whl && (rs2_addr_Dhl == rf_waddr_Whl) && inst_val_Whl ) ? 3'd5
 	  :  3'd0;
 
   // Aggregate Stall Signal

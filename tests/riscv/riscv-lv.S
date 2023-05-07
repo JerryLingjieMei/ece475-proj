@@ -67,13 +67,13 @@
         // luivi v22, 5, x0
         csrrsi x22, 5, 0
 
-        // redsum v2, v0, v1
-        //mulhu x2, x0, x1
+        // redsum v2, v1, v0
+        mulhu x2, x0, x1
 
         // mvxs r3, v2
-        //csrrc x3, 0, x2
+        csrrc x3, 0, x2
 
-        //TEST_CHECK_EQ(x3, 28)
+        TEST_CHECK_EQ(x3, 28)
 
         TEST_RISCV_END
 

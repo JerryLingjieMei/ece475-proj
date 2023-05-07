@@ -19,7 +19,7 @@
         csrrc x3, 0, x2
         // mvxs r1, v4
         csrrc x1, 0, x4
-        TEST_CHECK_EQ(x3, 1)
-        TEST_CHECK_EQ(x1, 8)
+        TEST_CHECK_EQ(x3, 8)
+        TEST_CHECK_EQ(x1, 1)
         TEST_RISCV_END
 

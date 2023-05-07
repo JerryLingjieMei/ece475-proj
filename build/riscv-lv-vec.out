@@ -6,6 +6,6 @@ VCD info: dumpfile ../tests/build/vmh/riscv-lv.vcd opened for output.
  STATS                                      
 --------------------------------------------
  status     =          1
- num_cycles =        127
- num_inst   =        123
- ipc        = 0.968504
+ num_cycles =        132
+ num_inst   =        128
+ ipc        = 0.969697
