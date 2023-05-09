@@ -81,4 +81,3 @@
         .align 4
 
 tdata_0:  .word 0xdeadbeef
-
