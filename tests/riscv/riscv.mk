@@ -35,11 +35,9 @@ riscv_srcs += \
   riscv-sub.S \
   riscv-xor.S \
   riscv-xori.S \
-  riscv-bug.S \
-  riscv-byp.S \
   riscv-vadd.S \
   riscv-vand.S \
   riscv-vslt.S \
   riscv-vseq.S \
   riscv-idv.S \
-
+  riscv-vredsum.S

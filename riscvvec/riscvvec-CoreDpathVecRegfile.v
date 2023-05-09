@@ -7,17 +7,17 @@
 
 module riscv_CoreDpathVectorRegfile
 (
-  input         clk,
-  input  [ 4:0] raddr0,  // Read 0 address (combinational input)
-  output [255:0]rdata0,  // Read 0 vec (combinational on raddr)
-  input  [ 4:0] raddr1,  // Read 1 address (combinational input)
-  output [255:0]rdata1,  // Read 1 vec (combinational on raddr)
-  input         wen_p,   // Write enable (sample on rising clk edge)
-  input  [ 4:0] waddr_p, // Write address (sample on rising clk edge)
-  input  [255:0]wdata_p,  // Write vec (sample on rising clk edge)
-  input         wvlen_p,
-  input  [31:0]  wvl_p,
-  output [3:0]  vl
+  input           clk,
+  input  [ 4:0]   raddr0,  // Read 0 address (combinational input)
+  output [255:0]  rdata0,  // Read 0 vec (combinational on raddr)
+  input  [ 4:0]   raddr1,  // Read 1 address (combinational input)
+  output [255:0]  rdata1,  // Read 1 vec (combinational on raddr)
+  input           wen_p,   // Write enable (sample on rising clk edge)
+  input  [ 4:0]   waddr_p, // Write address (sample on rising clk edge)
+  input  [255:0]  wdata_p,  // Write vec (sample on rising clk edge)
+  input           wvlen_p,
+  input  [31:0]   wvl_p,
+  output [3:0]    vl
 );
 
   // We use an array of 32 bit register for the regfile itself

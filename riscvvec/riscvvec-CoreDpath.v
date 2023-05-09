@@ -370,7 +370,7 @@ module riscv_CoreDpath
     : ( dmemresp_mux_sel_Mhl == 3'd4 ) ? dmemresp_lhu_Mhl
     :                                    32'bx;
 
-   wire [255:0] dmemresp_mux_vout_Mhl = 1024'bx;
+   wire [255:0] dmemresp_mux_vout_Mhl = 256'bx;
 
   //----------------------------------------------------------------------
   // Queue for data memory response
@@ -407,7 +407,7 @@ module riscv_CoreDpath
    wire [255:0] wb_mux_vout_Mhl
     = ( wb_mux_sel_Mhl == 1'd0 ) ? execute_mux_vout_Mhl
     : ( wb_mux_sel_Mhl == 1'd1 ) ? dmemresp_queue_mux_vout_Mhl
-    :                              1024'bx;
+    :                              256'bx;
 
 	//----------------------------------------------------------------------
   // X2 <- M
@@ -538,12 +538,12 @@ module riscv_CoreDpath
     .rdata0  (rf_vdata0_Dhl),
     .raddr1  (rf_raddr1_Dhl),
     .rdata1  (rf_vdata1_Dhl),
-    .wen_p   (rf_vwen_Whl && rf_vwen_Whl),
+    .wen_p   (rf_vwen_Whl && rf_wen_Whl),
     .waddr_p (rf_waddr_Whl),
     .wdata_p (wb_mux_vout_Whl),
     .wvlen_p (rf_vlwen_Xhl),
-    .wvl_p (alu_out_Xhl),
-    .vl (vl_Xhl)
+    .wvl_p   (alu_out_Xhl),
+    .vl      (vl_Xhl)
   );
 
   // ALU
@@ -579,14 +579,14 @@ module riscv_CoreDpath
 
   riscv_CoreDpathVecAlu vecalu
   (
-    .vin0  (op0_mux_vout_Xhl),
-    .vin1  (op1_mux_vout_Xhl),
+    .vin0    (op0_mux_vout_Xhl),
+    .vin1    (op1_mux_vout_Xhl),
     .in0     (op0_mux_out_Xhl),
-    .in0_ven  (op0_ven_Xhl),
+    .in0_ven (op0_ven_Xhl),
     .in1     (op1_mux_out_Xhl),
-    .in1_ven  (op1_ven_Xhl),
+    .in1_ven (op1_ven_Xhl),
     .fn      (alu_fn_Xhl),
-    .vout  (alu_vout_Xhl),
+    .vout    (alu_vout_Xhl),
     .vl      (vl_Xhl),
     .out     (vec_alu_out_Xhl)
   );
