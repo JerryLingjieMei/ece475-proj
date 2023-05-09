@@ -15,6 +15,8 @@ vc_srcs = \
   vc-TestSinglePortRandDelayMem.v \
   vc-TestDualPortMem.v \
   vc-TestDualPortRandDelayMem.v \
+  vc-TestEightPortMem.v\
+  vc-TestEightPortRandDelayMem.v\
   vc-TestQuadPortMem.v \
   vc-TestQuadPortRandDelayMem.v \
   vc-Misc.v \

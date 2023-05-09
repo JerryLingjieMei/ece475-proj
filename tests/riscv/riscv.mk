@@ -41,4 +41,12 @@ riscv_srcs += \
   riscv-vseq.S \
   riscv-idv.S \
   riscv-setvl.S \
-  riscv-vredsum.S
+  riscv-vredsum.S \
+  riscv-lv.S\
+  riscv-sv.S\
+  riscv-arraysadd.S\
+  riscv-arrayvadd.S\
+  riscv-arrayssum.S\
+  riscv-arrayvsum.S\
+  riscv-arraysfilter.S\
+  riscv-arrayvfilter.S\

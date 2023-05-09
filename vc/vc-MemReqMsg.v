@@ -238,4 +238,3 @@ endmodule
 `endif /* SYNTHESIS */
 
 `endif /* VC_MEM_REQ_MSG_V */
-

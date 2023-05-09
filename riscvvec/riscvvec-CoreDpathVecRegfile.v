@@ -37,6 +37,17 @@ module riscv_CoreDpathVectorRegfile
       vl  <=  (wvl_p>=8)? 4'd8 : wvl_p[3:0];
   end
 
+  // Debugging of vecrfile
+  wire [255:0] reg0 = registers[0];
+  wire [255:0] reg1 = registers[1];
+  wire [255:0] reg2 = registers[2];
+  wire [255:0] reg3 = registers[3];
+  wire [255:0] reg4 = registers[4];
+  wire [255:0] reg5 = registers[5];
+  wire [255:0] reg22 = registers[22];
+
+  
+
 endmodule
 
 `endif

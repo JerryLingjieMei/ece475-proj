@@ -31,6 +31,23 @@ module riscv_CoreDpathRegfile
       registers[waddr_p] <= wdata_p;
   end
 
+  //Debugging Rfile
+  wire [31:0] reg0 = registers[0];
+  wire [31:0] reg1 = registers[1];
+  wire [31:0] reg2 = registers[2];
+  wire [31:0] reg3 = registers[3];
+  wire [31:0] reg4 = registers[4];
+  wire [31:0] reg5 = registers[5];
+  wire [31:0] reg6 = registers[6];
+  wire [31:0] reg7 = registers[7];
+  wire [31:0] reg8 = registers[8];
+  wire [31:0] reg9 = registers[9];
+  wire [31:0] reg10 = registers[10];
+  wire [31:0] reg11 = registers[11];
+  wire [31:0] reg12 = registers[12];
+  wire [31:0] reg22 = registers[22];
+
+
 endmodule
 
 `endif

@@ -73,7 +73,6 @@ module riscv_CoreDpathVecAlu
     end
   endgenerate
 
-
 endmodule
 
 `endif
