@@ -12,28 +12,28 @@
         csrrsi x0, 1, 0
         // luivi v3, 5, x0
         csrrsi x3, 5, 0
-        // addvv v2, v0, v3
-        mulh x2, x0, x3
+        // sltvv v2, v0, v3
+        remu x2, x0, x3
         // mvxs r4, v2, 0
         csrrc x4, 0, x2
-        TEST_CHECK_EQ(x4, 6)
+        TEST_CHECK_EQ(x4, 1)
 
         // luivi v0, 2, x0
         csrrsi x0, 2, 0
-        li x3, 6
-        // addvx v2, v0, x3
-        mul x2, x0, x3
+        li x3, 2
+        // sltvx v2, v0, x3
+        rem x2, x0, x3
         // mvxs r4, v2, 0
         csrrc x4, 0, x2
-        TEST_CHECK_EQ(x4, 8)
+        TEST_CHECK_EQ(x4, 0)
 
         // luivi v0, 3, x0
         csrrsi x0, 3, 0
-        // addvi v2, v0, 7
-        lh x2, 7(x0)
+        // sltvi v2, v0, 1
+        sh x2, 1(x0)
         // mvxs r4, v2, 0
         csrrc x4, 0, x2
-        TEST_CHECK_EQ(x4, 10)
+        TEST_CHECK_EQ(x4, 0)
 
         TEST_RISCV_END
 

@@ -38,4 +38,7 @@ riscv_srcs += \
   riscv-bug.S \
   riscv-byp.S \
   riscv-vadd.S \
+  riscv-vand.S \
+  riscv-vslt.S \
+  riscv-vseq.S \
 

@@ -267,6 +267,10 @@ module riscv_CoreDpath
 
   wire [31:0] wdata_Dhl = rdata1_byp_mux_out_Dhl;
 
+//   always @ (posedge clk) begin
+//     $display("%x %x %x %x %x %x ", op0_mux_vout_Dhl, op1_mux_vout_Dhl, op0_mux_out_Dhl, op1_mux_out_Dhl, op0_ven_Xhl, op1_ven_Xhl);
+//   end
+
   //----------------------------------------------------------------------
   // X <- D
   //----------------------------------------------------------------------

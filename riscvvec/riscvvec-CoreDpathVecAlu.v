@@ -47,6 +47,7 @@ module riscv_CoreDpathVecAlu
           case (fn)
             4'd0: o = sum;
             4'd4: o = diffSigns? { 31'b0, elem_a[31] } : { 31'b0, sum[31] };
+            4'd6: o = elem_a & elem_b;
             4'd12: o = {31'b0, elem_a == elem_b};
             4'd13: o = i;
             default: o = 32'bx;
