@@ -275,9 +275,9 @@ module riscv_CoreDpath
 
   wire [255:0] dmemreq_data_Dhl = ( dmemreq_msg_len_Dhl == 3'd4) ? wvdata_Dhl : { {224{1'b0}}, wdata_Dhl };
 
-//   always @ (posedge clk) begin
-//     $display("%x %x %x %x %x %x ", op0_mux_vout_Dhl, op1_mux_vout_Dhl, op0_mux_out_Dhl, op1_mux_out_Dhl, op0_ven_Xhl, op1_ven_Xhl);
-//   end
+  always @ (posedge clk) begin
+    $display("%x %x %x %x %x %x ", op0_mux_vout_Dhl, op1_mux_vout_Dhl, op0_mux_out_Dhl, op1_mux_out_Dhl, op0_ven_Xhl, op1_ven_Xhl);
+  end
 
   //----------------------------------------------------------------------
   // X <- D

@@ -441,7 +441,6 @@ module riscv_CoreCtrl
 // 			`RISCV_INST_MSG_MULHSU	:cs={n, n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulsu,y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 // 			`RISCV_INST_MSG_MULHU		:cs={n, n,  y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_x,    md_mulu, y, mdm_u, em_md,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
-        `RISCV_INST_MSG_LV      :cs={n, n, y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_SETVL   :cs={n, y, n,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, n,  rx, n   };
         `RISCV_INST_MSG_ADDVI   :cs={n, n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_ANDVI   :cs={n, n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_and,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };

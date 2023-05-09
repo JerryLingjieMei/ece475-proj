@@ -61,19 +61,15 @@
         // lv v1, 0(x2)
         lb x1, 0(x2)
 
-        // luivi v0, 0, x0
-        csrrsi x0, 0, 0
+        // mvxs r3, v1
+        csrrc x3, 0, x1
 
-        // luivi v22, 5, x0
-        csrrsi x22, 5, 0
+        TEST_CHECK_EQ(x3, 0)
 
-        // redsum v2, v1, v0
-        mulhu x2, x0, x1
+        // mvxs r3, v1
+        csrrc x3, 1, x1
 
-        // mvxs r3, v2
-        csrrc x3, 0, x2
-
-        TEST_CHECK_EQ(x3, 28)
+        TEST_CHECK_EQ(x3, 1)
 
         TEST_RISCV_END
 

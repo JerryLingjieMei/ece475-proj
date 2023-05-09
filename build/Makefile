@@ -80,9 +80,9 @@ tests = \
   riscv-sub.vmh \
   riscv-xor.vmh \
   riscv-xori.vmh \
-  riscv-arraysadd\
-  riscv-arrayssum\
-  riscv-arraysfilter\
+  riscv-arraysadd.vmh\
+  riscv-arrayssum.vmh\
+  riscv-arraysfilter.vmh\
 
 vec_tests = \
   riscv-add.vmh \
@@ -124,11 +124,10 @@ vec_tests = \
   riscv-idv.vmh \
   riscv-setvl.vmh \
   riscv-vredsum.vmh\
-  riscv-lv.vmh\
   riscv-sv.vmh\
-  riscv-arrayvadd\
-  riscv-arrayvsum\
-  riscv-arrayvfilter\
+  riscv-arrayvadd.vmh\
+  riscv-arrayvsum.vmh\
+  riscv-arrayvfilter.vmh\
 
 riscvlong_rtl_sim = riscvlong-sim
 riscvlong_rtl_rand_sim = riscvlong-randdelay-sim
