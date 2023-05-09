@@ -41,4 +41,5 @@ riscv_srcs += \
   riscv-vand.S \
   riscv-vslt.S \
   riscv-vseq.S \
+  riscv-idv.S \
 

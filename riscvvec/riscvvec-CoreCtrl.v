@@ -448,7 +448,7 @@ module riscv_CoreCtrl
         `RISCV_INST_MSG_SEQVI   :cs={n, n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_eq,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_LUIVI   :cs={n, n, y,n,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_MVXS    :cs={y, n, n,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i,  n,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
-        `RISCV_INST_MSG_IDV     :cs={n, n, y,n,n, y,  n,    br_none, pm_p,   am_rdat, n,  bm_rdat,  n,  alu_x,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
+        `RISCV_INST_MSG_IDV     :cs={n, n, y,n,n, y,  n,    br_none, pm_p,   am_rdat, n,  bm_rdat,  n,  alu_idv,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
 
         `RISCV_INST_MSG_ADDVX   :cs={n, n, y,y,n, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };
         `RISCV_INST_MSG_ADDVV   :cs={n, n, y,y,y, y,  n,    br_none, pm_p,   am_rdat, y,  bm_rdat,  y,  alu_add,    md_x, n, mdm_x, em_alu,  nr,  ml_x, dmm_x,  wm_alu, y,  rd, n   };

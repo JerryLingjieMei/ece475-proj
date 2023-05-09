@@ -19,7 +19,7 @@ module riscv_CoreDpathVecAlu
   input           in1_ven,
   input  [3:0]   fn,
   input  [3:0]     vl,
-  output [31:0]  out,
+  output reg [31:0]  out,
   output reg [255:0] vout
 );
   // -- Decoder ----------------------------------------------------------
@@ -53,12 +53,13 @@ module riscv_CoreDpathVecAlu
             default: o = 32'bx;
           endcase
           vout[msb:lsb] = (i<=vl)? o: 32'bx;
+          if (in1[2:0]==i) begin
+            out = vin0[msb:lsb];
+          end
         end
     end
   endgenerate
 
-
-  assign out = vin0[31:0];
 
 endmodule
 
