@@ -121,6 +121,7 @@ vec_tests = \
   riscv-vslt.vmh \
   riscv-vseq.vmh \
   riscv-idv.vmh \
+  riscv-setvl.vmh \
   riscv-vredsum.vmh\
 
 riscvlong_rtl_sim = riscvlong-sim
